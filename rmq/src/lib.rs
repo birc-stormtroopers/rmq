@@ -1,6 +1,36 @@
+use std::cmp;
+
 mod tables;
 mod linear_query;
+mod tabulate;
 
+
+/*
+macro_rules! lift_binop {
+    ($a:ident, $b:ident, $expr:expr) => {
+        match (&$a, &$b) {
+            (&None, &None) => None,
+            (&Some(_), &None) => $a,
+            (&None, &Some(_)) => $b,
+            (&Some($a), &Some($b)) => Some($expr),
+        }
+    };
+}
+*/
+
+// FIXME
+/*
+// Lift min to Option<T>
+impl<T> Min for Option<T>
+where
+    T: Min + Copy,
+{
+    #[inline]
+    fn min(a: Self, b: Self) -> Self {
+        lift_binop!(a, b, T::min(a, b))
+    }
+}
+*/
 
 /// Range Minimum Query interface. Returns the left-most index
 /// containing the minimum value in x[i:j] where x is the range
@@ -11,6 +41,38 @@ pub trait RMQ {
     fn rmq(&self, i: usize, j: usize) -> Option<usize>;
 }
 
+/// An index i together with its value x[i].
+pub struct Point(usize, usize);
+impl Point {
+    #[inline]
+    pub fn new(i: usize, x: &[usize]) -> Point {
+        Point(i, x[i])
+    }
+}
+impl cmp::PartialEq for Point {
+    fn eq(&self, other: &Point) -> bool {
+        self.0 == other.0 && self.1 == other.1
+    }
+}
+impl cmp::Eq for Point {}
+impl cmp::Ord for Point {
+        fn cmp(&self, other: &Point) -> cmp::Ordering {
+        if *self == *other {
+            cmp::Ordering::Equal
+        }
+        else if self.1 < other.1 || (self.1 == other.1 && self.0 < other.0) {
+            cmp::Ordering::Less
+        }
+        else {
+            cmp::Ordering::Greater
+        }
+    }
+}
+impl cmp::PartialOrd for Point {
+    fn partial_cmp(&self, other: &Point) -> Option<cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
 
 
 
@@ -18,6 +80,7 @@ pub trait RMQ {
 mod tests {
     use super::*;
     use super::linear_query::LinearQuery;
+    use super::tabulate::TabulatedQuery;
 
     fn check_min_in_interval<'a, R: RMQ>(x: &'a [usize], rmq: &'a R, i: usize, j: usize) {
         let k = rmq.rmq(i, j).unwrap();
@@ -55,5 +118,21 @@ mod tests {
         // Power of two
         let x = vec![2, 1, 2, 5, 3, 6, 1, 3];
         check_min(&x, &LinearQuery::new(&x));
+    }
+
+    #[test]
+    fn test_tabulate() {
+        // Not power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3, 7, 4];
+        check_min(&x, &TabulatedQuery::new(&x));
+        // Power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3, 7, 4, 2, 6, 3, 4, 7, 9];
+        check_min(&x, &TabulatedQuery::new(&x));
+        // Not power of two
+        let x = vec![2, 1, 2, 0, 2, 1, 3, 7, 4];
+        check_min(&x, &TabulatedQuery::new(&x));
+        // Power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3];
+        check_min(&x, &TabulatedQuery::new(&x));
     }
 }

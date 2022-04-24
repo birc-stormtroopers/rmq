@@ -1,5 +1,5 @@
 /// Upper-triangular tables
-mod triag {
+pub mod triag {
     #[inline]
     fn flat_index(i: usize, j: usize, n: usize) -> usize {
         let k = n - i - 1;
@@ -59,3 +59,4 @@ mod triag {
         }
     }
 }
+
