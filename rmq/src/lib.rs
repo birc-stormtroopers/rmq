@@ -1,33 +1,26 @@
-pub trait RMQ<'a> {
-    fn new(x: &'a [usize]) -> Self;
-    fn rmq(&self, i: usize, j: usize) -> usize;
+mod tables;
+mod linear_query;
+
+
+/// Range Minimum Query interface. Returns the left-most index
+/// containing the minimum value in x[i:j] where x is the range
+/// the RMQ preprocessing is done over. It returns an Option
+/// since you sometimes don't want to check for empty intervals
+/// before calling it, but instead want to deal with it after.
+pub trait RMQ {
+    fn rmq(&self, i: usize, j: usize) -> Option<usize>;
 }
 
-// Linear query time with zero preprocessing: <O(1),O(n)>
-pub struct LinearQuery<'a> {
-    x: &'a [usize],
-}
-
-impl<'a> RMQ<'a> for LinearQuery<'a> {
-    fn new(x: &'a [usize]) -> Self {
-        LinearQuery{x: &x}
-    }
-    fn rmq(&self, i: usize, j: usize) -> usize {
-        let y = &self.x[i..j];
-        let min_val = y.iter().min().unwrap();
-        let pos = i + y.iter().position(|a| a == min_val).unwrap();
-        pos
-    }
-}
 
 
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use super::linear_query::LinearQuery;
 
-    fn check_min_in_interval<'a, R: RMQ<'a>>(x: &'a [usize], rmq: &'a R, i: usize, j: usize) {
-        let k = rmq.rmq(i, j);
+    fn check_min_in_interval<'a, R: RMQ>(x: &'a [usize], rmq: &'a R, i: usize, j: usize) {
+        let k = rmq.rmq(i, j).unwrap();
         assert!(i <= k);
         assert!(k < j);
 
@@ -40,7 +33,7 @@ mod tests {
         }
     }
 
-    fn check_min<'a, R: 'a + RMQ<'a>>(x: &'a [usize], rmq: &'a R) {
+    fn check_min<'a, R: RMQ>(x: &'a [usize], rmq: &'a R) {
         for i in 0..x.len() {
             for j in i + 1..x.len() + 1 {
                 check_min_in_interval(x, rmq, i, j)
