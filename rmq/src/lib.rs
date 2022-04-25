@@ -3,34 +3,30 @@ use std::cmp;
 mod tables;
 mod linear_query;
 mod tabulate;
-
+mod sparse;
+mod reduce;
 
 /*
-macro_rules! lift_binop {
-    ($a:ident, $b:ident, $expr:expr) => {
-        match (&$a, &$b) {
-            (&None, &None) => None,
-            (&Some(_), &None) => $a,
-            (&None, &Some(_)) => $b,
-            (&Some($a), &Some($b)) => Some($expr),
-        }
-    };
+fn lift<A, B, C>(f: impl Fn(A, B)->C) -> impl Fn(Option<A>, Option<B>)->Option<C> {
+    move |a, b| Some(f(a?, b?))
 }
-*/
-
-// FIXME
-/*
-// Lift min to Option<T>
-impl<T> Min for Option<T>
-where
-    T: Min + Copy,
-{
-    #[inline]
-    fn min(a: Self, b: Self) -> Self {
-        lift_binop!(a, b, T::min(a, b))
+fn lift_op<T: Copy>(f: impl Fn(T, T)->T) -> impl Fn(Option<T>, Option<T>)->Option<T> {
+    move |a, b|         
+    match (a, b) {
+        (None, None) => None,
+        (Some(_), None) => a,
+        (None, Some(_)) => b,
+        (Some(a), Some(b)) => Some(f(a,b)),
     }
 }
 */
+
+fn rmq(x: &[usize], i: usize, j: usize) -> Option<usize> {
+    let y = &x[i..j];
+    let min_val = y.iter().min()?;
+    let pos = i + y.iter().position(|a| a == min_val)?;
+    Some(pos)
+}
 
 /// Range Minimum Query interface. Returns the left-most index
 /// containing the minimum value in x[i:j] where x is the range
@@ -81,6 +77,7 @@ mod tests {
     use super::*;
     use super::linear_query::LinearQuery;
     use super::tabulate::TabulatedQuery;
+    use super::sparse::Sparse;
 
     fn check_min_in_interval<'a, R: RMQ>(x: &'a [usize], rmq: &'a R, i: usize, j: usize) {
         let k = rmq.rmq(i, j).unwrap();
@@ -134,5 +131,21 @@ mod tests {
         // Power of two
         let x = vec![2, 1, 2, 5, 3, 6, 1, 3];
         check_min(&x, &TabulatedQuery::new(&x));
+    }
+
+    #[test]
+    fn test_sparse() {
+        // Not power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3, 7, 4];
+        check_min(&x, &Sparse::new(&x));
+        // Power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3, 7, 4, 2, 6, 3, 4, 7, 9];
+        check_min(&x, &Sparse::new(&x));
+        // Not power of two
+        let x = vec![2, 1, 2, 0, 2, 1, 3, 7, 4];
+        check_min(&x, &Sparse::new(&x));
+        // Power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3];
+        check_min(&x, &Sparse::new(&x));
     }
 }

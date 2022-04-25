@@ -30,10 +30,6 @@ impl TabulatedQuery {
 
 impl RMQ for TabulatedQuery {
     fn rmq(&self, i: usize, j: usize) -> Option<usize> {
-        if i < j {
-            Some(self.tbl[(i,j)])
-        } else {
-            None
-        }
+        if i < j { Some(self.tbl[(i,j)]) } else { None }
     }
 }

@@ -14,9 +14,7 @@ impl<'a> LinearQuery<'a> {
 
 impl<'a> RMQ for LinearQuery<'a> {
     fn rmq(&self, i: usize, j: usize) -> Option<usize> {
-        let y = &self.x[i..j];
-        let min_val = y.iter().min()?;
-        let pos = i + y.iter().position(|a| a == min_val)?;
-        Some(pos)
+        // The naive solution we already have in super:: as a function
+        super::rmq(self.x, i, j)
     }
 }
