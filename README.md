@@ -457,8 +457,44 @@ So, the `p1`, `p2`, and `p3` hold the data I got from querying the three interva
 Easy peasy, right?
 
 
+## Can you get `<O(n),O(1)>`?
+
+Since we probably have to look at all the elements, we can't hope for something `<o(n),o(n)>`, and linear time preprocessing with constant time queries is probably optimal in most applications. We are almost there, we have `O(n)` preprocessing and we have had `O(1)` queries, just not at the same time. Can we get that?
+
+Yes, but it gets tricky.
+
+The basic idea isn't complicated. We already know that if we split `x` into blocks, then we can get build the sparse representation in `O(n)`, so basically the question is if we can preprocess the blocks so we can handle the two `[i,ii)` and `[jj,j)` intervals in constant time, and we can.[^4]
+
+There are several approaches to this, but they all boil down to having a big hunking table of all possible blocks, where each entry is a table like the first (fully tabulated) table we made. With such a table `T`, when you have `[i,j)` that's contained in the same block, you can figure out what kind of block you have, let's say it is called `B`, get the block table, `T[B]` and query `RMQ(i,j) = T[B][i,j]`.
+
+If we fully tabulate, then the size of a block-table, `T[B]`, is quadratic in the block size, `O(b²)`. That might not be too bad if there is only a constant number of them; if `b = log(n)` then `O(log²n)` in `O(n)` so no worries there. But there probably isn't a constant number of blocks. (That was sarcasm; there isn't a constant number of blocks). There will be some function of `n` blocks, say `B(n)` so fully tabulating takes time `O(B(n)*b²)`. The time should be fairly obvious; we are filling out `B(n)` tables in an approach we know takes `O(b²)` time.
+
+The trick is to keep `B(n)` small enough to keep `O(B(n)*b²)` in `O(n)` while still keeping the block size large enough that `O(n/b log(n/b))` is also in `O(n)`.
+
+It is not a question of changing the block size. There will always be `n/b` blocks, so if `B(n)` is the number of block we have, `O(n/b * b²) = O(nb)` will never be linear if `b > log(n/b)`. We must map multiple blocks into the same table so we have fewer of the block-tables.
+
+How is that possible? Each block *could* be unique, after all; we have an array of ordered values and they don't have to be repetitive. This is true, but we don't care about the actual blocks; we care about the `RMQ` results we get on them. Two different blocks can return exactly the same for any `RMQ(i,j)`.
+
+One way to summarise the `RMQ` structure is using a so-called [Cartesian tree](https://en.wikipedia.org/wiki/Cartesian_tree). Two blocks with the same `RMQ` structure will have the same Cartesian tree topology. And you can build Cartesian trees is time `O(m)` for a sequence of length `m`,[^5] and you can map them to numbers so they can become indices into a `T[B]` table. This means that we can map each block to a tree `t` and get the index for that tree, `idx(t)`. With an array of indices, one for each block, you know which entry in the big table of tables, `T[idx(t)]`, you need to do your query: `T[idx(t)][i,j]`. You can do this mapping in `O(n)` because you have `n/b` blocks and building the tree for a block takes time `b`, thus `O(n/b * b) = O(n)`.
+
+We still have to be careful, though. We need to spend time `O(B(n)b²)` building all the tables after we have mapped the blocks, so even if we reduce blocks to Cartesian trees the blocks can't be too long.
+
+A Cartesian tree is a binary tree and it will have `b` nodes for a block of length `b`. There are `O(4**m / (m**(3/2)))` binary tree topologies for trees with `m` nodes--this isn't obvious but a result from combinatorics--so there are no more than `O(4**b / (b**(3/2)))` Cartesian trees if the block size is `b`. For each tree it takes `O(b²)` time to build the corresponding RMQ table, so the total time to build all the tables is `O(4**b * b² * b**(-3/2))` and since `b² * b**(-3/2) = b**(2 - 3/2) = b**(1/2) = sqrt(b)` it will take `O(4**b * sqrt(b))` time to build the tables.
+
+That's a nasty exponential, but remember that `b` can be logarithmic in `n`. Set `b = log n / 4`. The sparse stuff takes `O(n/b log n/b) = O(4n/log(n) * log(4n/log(n))) = O(n)` so that is still fine. To build all the tables we get `O(4**b * sqrt(b)) = O(4**(log(n)/4) * sqrt(1/4 log n))`. Since `4**(log(n)/4) = sqrt(n)` this is `O(sqrt(n) * sqrt(1/4 log n))` which is in `O(n)`. That means that we can build the table of tables as well in linear time.
+
+Since we can build the sparse table in `O(n)` and then the table of all the sub-tables in `O(n)` we get linear time preprocessing, and the queries are constant time since we reuse the idea from the `<O(n),O(log n)>` solution, but the `O(log n)` part of this algorithm is now replaced with a table lookup--find the sub-table for the two blocks in question and look up the answer there--and that is `O(1)`, and that is our `<O(n),O(1)>` solution.
+
+This is not a task for the programming club. Constructing Cartesian trees (or faking it, which is also possible) is move involved than what we have seen above. But if you feel up for it, it would be a good thesis topic!
+
+
+
 [^1]: You can't always get constant time lookup with the sparse table trick, but then you can often get query times that are proportional to the size of the blocks, so that would be `O(log n)` here. This is not a bad query time; it only looks like it because we can do better her.
 
 [^2]: Self-referencing means that the data structure has references to something it holds itself. In our case, the sparce table has a reference to the reduced values, and the reduced values are held by the structure. This is sometimes useful, but it makes memory checkers work harder than they care to, and Rust's type checker doesn't like it. It is possible, but not pretty.
 
 [^3]: It is called "lift_op" [because of reasons](https://en.wikipedia.org/wiki/Lift_(mathematics)), but it just means that I translate some function `f: A -> B` into another `lift(f): F(A) -> F(B)` where `F(X)` is some type that depends on `X`. The general stuff is terribly abstract, so ask a hard-core mathematician about that, but in our case we have a type `T` where we have an operation `f: (T,T) -> T` but we need one that works on `(Option<T>,Option<T>) -> Option<T>` and the `lift_op` does that with the rules in the `match (a, b) { ... }` expression. It is more complicated than usual, because usually we would say that `lift(f)` should return `None` if either argument is `None` and only apply `f` if both were `Some(...)` and in that case the function body could be `move |a, b| Some(f(a?,b?))`.
+
+[^4]: It is not the only question, of course, you could also ask if there is a completely different approach to get there, but I don't know any such approaches, so I will pretend that you asked the first question.
+
+[^5]: To build a Cartesian tree in linear time you use an algorithm that resembles the algorithm we use to build suffix trees from suffix and lcp arrays in GSA. You scan left to right, keep track of the right backbone of the current tree, and you move upwards to insert a new node for each new index. The time analysis is also similar to that; you use an amortisation argument to show that moving up and down in the tree cannot take more than `O(m)` steps.
