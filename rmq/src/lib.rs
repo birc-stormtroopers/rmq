@@ -10,6 +10,7 @@ mod reduce;
 fn lift<A, B, C>(f: impl Fn(A, B)->C) -> impl Fn(Option<A>, Option<B>)->Option<C> {
     move |a, b| Some(f(a?, b?))
 }
+*/
 fn lift_op<T: Copy>(f: impl Fn(T, T)->T) -> impl Fn(Option<T>, Option<T>)->Option<T> {
     move |a, b|         
     match (a, b) {
@@ -19,7 +20,7 @@ fn lift_op<T: Copy>(f: impl Fn(T, T)->T) -> impl Fn(Option<T>, Option<T>)->Optio
         (Some(a), Some(b)) => Some(f(a,b)),
     }
 }
-*/
+
 
 fn rmq(x: &[usize], i: usize, j: usize) -> Option<usize> {
     let y = &x[i..j];
@@ -38,12 +39,19 @@ pub trait RMQ {
 }
 
 /// An index i together with its value x[i].
+#[derive(Clone, Copy, Debug)]
 pub struct Point(usize, usize);
 impl Point {
     #[inline]
     pub fn new(i: usize, x: &[usize]) -> Point {
         Point(i, x[i])
     }
+    /// Get Some(Point(i,x[i])) if the index is valid or None if not
+    #[inline]
+    pub fn get(i: Option<usize>, x: &[usize]) -> Option<Point> {
+        Some(Point(i?, *x.get(i?)?))
+    }
+
 }
 impl cmp::PartialEq for Point {
     fn eq(&self, other: &Point) -> bool {
@@ -78,9 +86,11 @@ mod tests {
     use super::linear_query::LinearQuery;
     use super::tabulate::TabulatedQuery;
     use super::sparse::Sparse;
+    use super::reduce::Reduced;
 
     fn check_min_in_interval<'a, R: RMQ>(x: &'a [usize], rmq: &'a R, i: usize, j: usize) {
         let k = rmq.rmq(i, j).unwrap();
+        println!("RMQ({},{}) = {}", i, j, k);
         assert!(i <= k);
         assert!(k < j);
 
@@ -147,5 +157,21 @@ mod tests {
         // Power of two
         let x = vec![2, 1, 2, 5, 3, 6, 1, 3];
         check_min(&x, &Sparse::new(&x));
+    }
+
+    #[test]
+    fn test_reduced() {
+        // Not power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3, 7, 4];
+        check_min(&x, &Reduced::new(&x));
+        // Power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3, 7, 4, 2, 6, 3, 4, 7, 9];
+        check_min(&x, &Reduced::new(&x));
+        // Not power of two
+        let x = vec![2, 1, 2, 0, 2, 1, 3, 7, 4];
+        check_min(&x, &Reduced::new(&x));
+        // Power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3];
+        check_min(&x, &Reduced::new(&x));
     }
 }
