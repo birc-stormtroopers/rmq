@@ -27,7 +27,7 @@ fn rmq(x: &[usize], i: usize, j: usize) -> Option<usize> {
 
 The `usize` type is an unsigned integer. There are multipel of those, but this is the one you use for indexing and such, so it is the one we must use for index variable `i` and `j` and for the result of a range minimum query (which, as you recall, is an index). Well, it isn't an index here, but I will get to that in a second.
 
-The function gets the relevant slice out of `x`. The `i..j` expression works as `i:j` in Python and the `&` in front of `x` means that we get a reference to this slice of `x`. We don't copy any elements from `x` here, we just get a way of treating a sub-sequence as an object. It isn't important here, because we are going to scan through all of `y` anyway, but remember that in Python, `x[i:j]` is *copying* all the elements in the slice, so it takes time `O(j-i)`. This isn't the case in all languages; some allow you to slice in `O(1)` because you operate on the same data and not a copy.
+The function gets the relevant slice out of `x`. The `i..j` expression works as `i:j` in Python and the `&` in front of `x` means that we get a reference to this slice of `x`. We don't copy any elements from `x` here, we just get a way of treating a sub-sequence as an object. It isn't important here, because we are going to scan through all of `y` anyway, but remember that in Python, `x[i:j]` is *copying* all the elements in the slice, so it takes time $O(j-i)$. This isn't the case in all languages; some allow you to slice in $O(1)$ because you operate on the same data and not a copy.
 
 Anyway, we get `y`, then we get the smallest value in `y` (the `.iter()` lets us run through `y` and the `.min()` gives us the minimal value) and finally we get the first position that satisfy the predicate `a == min_val`, so the first (left-most) index where we have a minimal value.
 
@@ -41,13 +41,13 @@ The `?` after `min()` and `position(...)` is related to this `Some(...)`/`None` 
 
 If `.position()` gives me `Some(k)`, then `k` is an index into `y`, but I want an index into `x`, so I add `i` to it. I then return the result. Since my function returns an `Option<usize>` it needs to return either `None` or `Some(val)`, so I wrap the result in a `Some(...)`.
 
-That is how the function works, and it takes time `O(j-i)` which I will simplify to `O(n)`. 
+That is how the function works, and it takes time $O(j-i)$ which I will simplify to $O(n)$. 
 
-So, with no preprocessing and a linear scan for each query, we have a solution that runs in `<O(1),O(n)>`.
+So, with no preprocessing and a linear scan for each query, we have a solution that runs in $\langle O(1),O(n) \rangle$.
 
 ## Tabulating all intervals
 
-You can of course also go to the other extreme and build a table of all interval `i<j` so when you need to query an interval you just look up the result in a table. I have put an implementation of that in `rmq/src/tabulate.rs`.
+You can of course also go to the other extreme and build a table of all interval $i < j$ so when you need to query an interval you just look up the result in a table. I have put an implementation of that in `rmq/src/tabulate.rs`.
 
 The preprocessed data structure consists of a table and nothing more.
 
@@ -57,7 +57,7 @@ pub struct TabulatedQuery {
 }
 ```
 
-The `triag::UTTable` type is a structure I have implemented to handle upper triangular matrices. I store solutions for intervals `i < j` only, so I don't need to store any `j <= i` and I don't want to use `n * n` space if I can get what I need with half that. It works like a table the same way you would expect (and you can check the source in `rmq/src/tables.rs`).
+The `triag::UTTable` type is a structure I have implemented to handle upper triangular matrices. I store solutions for intervals $i < j$ only, so I don't need to store any $j \leq i$ and I don't want to use $n \times n$ space if I can get what I need with half that. It works like a table the same way you would expect (and you can check the source in `rmq/src/tables.rs`).
 
 The query is the simplest here:
 
