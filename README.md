@@ -69,7 +69,7 @@ impl RMQ for TabulatedQuery {
 }
 ```
 
-If the interval is valid, i.e., `i < j`, then I get the value from the table and return `Some(...)` that. Otherwise, I return `None`.
+If the interval is valid, i.e., $i < j$, then I get the value from the table and return `Some(...)` that. Otherwise, I return `None`.
 
 For the preprocessing, we have to be careful. The immidiate throught might be to use the function from above for each interval.
 
@@ -79,9 +79,9 @@ For the preprocessing, we have to be careful. The immidiate throught might be to
 
 (where `super::rmq` is the function from earlier and not the query method we just wrote).
 
-However, this query takes time `O(n)` so if we do it for all intervals the total preprocessing time is `O(n³)`. We can do a little better.
+However, this query takes time $O(n)$ so if we do it for all intervals the total preprocessing time is $O(n^3)$. We can do a little better.
 
-Using dynamic programming we can build the table of intervals in order of increasing length. If you want to know the RMQ of `x[i:j]` then you already know the result for `x[i:j-1]` (because it is shorter), so you can compute the result for each interval in constant time, giving us a total preprocessing time of `O(n²)`--and since we have to tabulate quadratically many intervals that is as good as it gets.
+Using dynamic programming we can build the table of intervals in order of increasing length. If you want to know the RMQ of `x[i:j]` then you already know the result for `x[i:j-1]` (because it is shorter), so you can compute the result for each interval in constant time, giving us a total preprocessing time of $O(n^2)$--and since we have to tabulate quadratically many intervals that is as good as it gets.
 
 ```rust
 impl TabulatedQuery {
@@ -104,15 +104,15 @@ impl TabulatedQuery {
 }
 ```
 
-That gave us a solution with running time `<O(n²),O(1)>`. Great if you have time to tabulate and plan to do lots and lots of queries, but a quadratic preprocessing time is prohibitive for genome-scale sequences...
+That gave us a solution with running time $\langle O(n^2),O(1) \rangle$. Great if you have time to tabulate and plan to do lots and lots of queries, but a quadratic preprocessing time is prohibitive for genome-scale sequences...
 
 ## Using a sparse table
 
 There is a really neat trick when you need to tabulate intervals. It doesn't always work, but it works surprisingly often. The trick is to not tabulate all the intervals. Presto, you don't have to spend at least quadratic time any more.
 
-Of course, we don't want to go back to *no* table again, there queries were too expensive, but there is a trick that gives us constant time queries with only `O(n log n)` preprocessing time.[^1]
+Of course, we don't want to go back to *no* table again, there queries were too expensive, but there is a trick that gives us constant time queries with only $O(n \log n)$ preprocessing time.[^1]
 
-What we will do is this: we tabulate `tbl[i,k] = rmq(x, i, i+2**k)` for all `i` and all powers of two `2**k <= n`. There are only `log n` such powers of two, so the table only has have `O(n log n)` entries, and if we can compute an entry in constant time we have `O(n log n)` preprocessing. The trick for that is once again dynamic programming. If you want to know `RMQ(i,i+2**k)` you will already have computed `RMQ(i,i+2**(k-1))` and `RMQ(i+2**(k-1),i+2**k)`, so you just have to get the values there and pick the best.
+What we will do is this: we tabulate `tbl[i,k] = rmq(x, i, i+2**k)` for all `i` and all powers of two `2**k <= n`. There are only $\log n$ such powers of two, so the table only has have $O(n \log n)$ entries, and if we can compute an entry in constant time we have $O(n \log n)$ preprocessing. The trick for that is once again dynamic programming. If you want to know $\mathrm{RMQ}(i,i+2^k)$ you will already have computed $\mathrm{RMQ}(i,i+2^{k-1})$ and $\mathrm{RMQ}(i+2^{k-1},i+2^k)$, so you just have to get the values there and pick the best.
 
 Before I show you the code, though, I need to show you a few additional tricks. Some of Rust specific--but you can achieve similar things in other languages--and others are just general ways of moving complexity from one place to another and making your code simpler in the process.
 
