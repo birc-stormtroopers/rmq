@@ -255,15 +255,15 @@ This is two table lookups and some comparisons, all in $O(1)$, so this sparse id
 
 ## Reduce + sparse
 
-Well, that's all good and fine, but who wants to spend time `O(n log n)` on preprocessing? Can't we do better?
+Well, that's all good and fine, but who wants to spend time $O(n \log n)$ on preprocessing? Can't we do better?
 
 Sure we can!
 
-And here we get to another trick that pops up from time to time, and is more general than what we see here. If you have something that takes `O(f(n))` and you want it to be faster, make `n` smaller!
+And here we get to another trick that pops up from time to time, and is more general than what we see here. If you have something that takes $O(f(n))$ and you want it to be faster, make $n$ smaller!
 
-Yeah, it sounds stupid when I say it like that, but this is the idea. We reduce our data into something smaller, say of length `m`, and now `O(f(m))` might not be so bad.
+Yeah, it sounds stupid when I say it like that, but this is the idea. We reduce our data into something smaller, say of length $m$, and now $O(f(m))$ might not be so bad.
 
-We have a preprocessing time of `O(n log n)`, and if we reduce it, then it becomes `O(m log m)`. If, for example, we split `x` into blocks of size `b` and treat each block as a value, then `m = n/b` of if `b > log(n/b)` then `O(n/b log(n/b))` is in `O(n)`. You could use `b = sqrt(n)` or `b = log(n)` here, or basically anything where the block size is larger than `log(n/b)` and you will get a linear preprocessing time.
+We have a preprocessing time of $O(n \log n)$, and if we reduce it, then it becomes $O(m \log m)$. If, for example, we split $x$ into blocks of size $b$ and treat each block as a value, then $m = n/b$ of if $b > \log(n/b)$ then $O(n/b \log(n/b))$ is in $O(n)$. You could use $b = \sqrt{n}$ or $b = \log n$ here, or basically anything where the block size is larger than $\log(n/b)$ and you will get a linear preprocessing time.
 
 The way you reduce `x` into blocks is pretty simple as well. Split `x` into blocks, then pick the minimal value for each block, and save the index of the minimal value in each block so you can go back from the reduced data to the original indices.
 
