@@ -4,7 +4,7 @@ The *range minimum query* (RMQ) operation is rather simple but has multiple appl
 
 Efficient range minimum queries are important in multiple applications, but learning how to make this query efficient is interesting in its own right. Some of the techniques--those I will describe here--are also applicable in other contexts, so they are nice to know, even if you never end up needing RMQ. Some of the tricks you already know, like dynamic programming, but some of them might be new.
 
-As with many data structures, we have two phases were we spend time. A *preprocessing* phase, to get our data in order, and then a *query* phase, where we use the preprocessed data to do queries. I will use the notation `<O(p),O(q)>` notation to describe an approach, where `p` denotes the preprocessing time and `q` the time needed for one query.
+As with many data structures, we have two phases were we spend time. A *preprocessing* phase, to get our data in order, and then a *query* phase, where we use the preprocessed data to do queries. I will use the notation $\langle O(p),O(q) \rangle$ notation to describe an approach, where $p$ denotes the preprocessing time and $q$ the time needed for one query.
 
 I have coded the ideas in Rust here and that is all you get. My idea is that you would implement them in a language of your choice. Since that is not likely to be Rust, Rust seemed like a good idea for showing you the ideas without affecting how you choose to implement them yourself. I'll explain when there is Rust weirdness, but for most of the code it should be easy enough to read.
 
