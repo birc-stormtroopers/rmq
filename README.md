@@ -144,7 +144,7 @@ pub fn log_table_size(n: usize) -> Pow {
 
 Wrapping base types with different roles is very useful if you use a language that is statically typed and where this doesn't incur a runtime penalty, so I generally do it. If you do it in Python you will pay a runtime cost, so you might not want to there.
 
-Then the other idea, and it might be a stretch to call it an idea at this point, but it becomes helful later. When we have to determine which of `(i,i+2**(k-1))` and `(i+2**(k-1),i+2**k)` has the smaller value, we can use `RMQ` to get the index, then we need to pick the values in `x` at those index, find the minimal of those, and then pick the index corresponding to those values...oh my.
+Then the other idea, and it might be a stretch to call it an idea at this point, but it becomes helful later. When we have to determine which of $(i,i+2^{k-1})$ and $(i+2^{k-1},i+2^k)$ has the smaller value, we can use `RMQ` to get the index, then we need to pick the values in `x` at those index, find the minimal of those, and then pick the index corresponding to those values...oh my.
 
 I decided it would be easier to have a type that holds an index together with value, `(i,x[i])`, and define `min` on those.
 
@@ -214,15 +214,15 @@ impl<'a> Sparse<'a> {
 }
 ```
 
-As we already discussed, there are `O(n log n)` table entires, we compute each of them with dynamic programming in `O(1)`, so the preprocessing time is `O(n log n)`.
+As we already discussed, there are $O(n \log n)$ table entires, we compute each of them with dynamic programming in $O(1)$, so the preprocessing time is $O(n \log n)$.
 
-What about the queries? We don't have all intervals in our table, so `RMQ(x,i,j)` isn't a simple table lookup any longer.
+What about the queries? We don't have all intervals in our table, so $\mathrm{RMQ}(x,i,j)$ isn't a simple table lookup any longer.
 
-What we do is this: we find the largest power of two, `2**k` such that `i+2**k < j`. If this is the largest such power, then the intervals `[i,i+2**k)` and `[j-2**k,j)` cover `[i,j)`, meaning that there isn't any indices in `[i,j)` that aren't in at least one of the two--but there might be some overlap between the two intervals.
+What we do is this: we find the largest power of two, $2^k$ such that $i+2^k < j$. If this is the largest such power, then the intervals $[i,i+2^k)$ and $[j-2^k,j)$ cover $[i,j)$, meaning that there isn't any indices in $[i,j)$ that aren't in at least one of the two--but there might be some overlap between the two intervals.
 
 Well, overlaps don't really bother us when we want a minimal value; the worst that can happen is that we get the right answer twice.
 
-If you want the smallest value in `[i,j)`, get the smallest from the two intervals that are powers of two--look them up in the table--and pick the smallest of them.
+If you want the smallest value in $[i,j)$, get the smallest from the two intervals that are powers of two--look them up in the table--and pick the smallest of them.
 
 ```rust
 impl<'a> RMQ for Sparse<'a> {
@@ -251,7 +251,7 @@ pub fn power_index(i: usize, j: usize) -> ((usize,Pow), (usize,Pow)) {
 }
 ```
 
-This is two table lookups and some comparisons, all in `O(1)`, so this sparse idea gives us `<O(n log n),O(1)>`.
+This is two table lookups and some comparisons, all in $O(1)$, so this sparse idea gives us $\langle O(n \log n),O(1) \rangle$.
 
 ## Reduce + sparse
 
