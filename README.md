@@ -360,7 +360,7 @@ we get a range in the reduced data, $[b_i,b_j)$, and two ranges in the original 
 
 Getting the RMQ in $[b_i,b_j)$ is just asking our sparse table for it. The index we get back is an index into the reduced values, but if we get `k` back then `indices[k]` is the corresponding value in the original `x`.
 
-The other two ranges we can handle with a linear scan in $O(b)$. The blocks are $b$ long, so it can't take longer than that. That means that we have a $\langle O(n/b log n/b), O(b) \rangle$ solution. If we use $b = \log n$, for example, we get $\langle O(n),O(\log n) \rangle$. Linear time preprocessing with logarithmic query.
+The other two ranges we can handle with a linear scan in $O(b)$. The blocks are $b$ long, so it can't take longer than that. That means that we have a $\langle O(n/b \log n/b), O(b) \rangle$ solution. If we use $b = \log n$, for example, we get $\langle O(n),O(\log n) \rangle$. Linear time preprocessing with logarithmic query.
 
 I hesitate with showing you my implementation; it is a little ugly. Rust is *really* not happy with self-referencing structures[^2] and you have to jump through some loops to get them, but I have implemented it by wrapping a type that holds the data structures in one that has a nicer interface.
 
