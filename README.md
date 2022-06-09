@@ -303,7 +303,7 @@ I use `super::rmq(&x, begin, end)`--the first function we saw that does RMQ by s
 
 Ok, so now I have reduced data with the minimal value and index for each block. Then what?
 
-Well, we planned to use the sparse matrix trick on the reduced data, so that is what we will do. That will let us query `RMQ(values, bi, bj)` on the reduced data with indices mapped to the smaller data (just divide `i` and `j` with the block size to get there). As long as we only want to know RMQ queries at the break points of blocks, that will get us there.
+Well, we planned to use the sparse matrix trick on the reduced data, so that is what we will do. That will let us query $\mathrm{RMQ}(\mathrm{values}, b_i, b_j)$ on the reduced data with indices mapped to the smaller data (just divide $i$ and $j$ with the block size to get there). As long as we only want to know RMQ queries at the break points of blocks, that will get us there.
 
 But users are unreasonable and will probably make queries that do not fall on the block break points, so we need to handle that as well.
 
@@ -346,7 +346,7 @@ let (bi, ii) = round_up(i, bs);
 let (bj, jj) = round_down(j, bs);
 ```
 
-we get a range in the reduced data, `[bi,bj)`, and two ranges in the original data, `[i,ii)` and `[jj,j)`. We should get the RMQ in all three ranges and return the smallest.
+we get a range in the reduced data, $[b_i,b_j)$, and two ranges in the original data, `[i,ii)` and `[jj,j)`. We should get the RMQ in all three ranges and return the smallest.
 
 ```
                   i=2                        j=10
