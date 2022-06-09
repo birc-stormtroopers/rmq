@@ -457,15 +457,15 @@ So, the `p1`, `p2`, and `p3` hold the data I got from querying the three interva
 Easy peasy, right?
 
 
-## Can you get $\langle O(n),O(1) \rangle$?
+## Can you get `<O(n),O(1)>`?
 
-Since we probably have to look at all the elements, we can't hope for something `<o(n),o(n)>`, and linear time preprocessing with constant time queries is probably optimal in most applications. We are almost there, we have `O(n)` preprocessing and we have had `O(1)` queries, just not at the same time. Can we get that?
+Since we probably have to look at all the elements, we can't hope for something $\langle o(n),o(n) \rangle$, and linear time preprocessing with constant time queries is probably optimal in most applications. We are almost there, we have $O(n)$ preprocessing and we have had $O(1)$ queries, just not at the same time. Can we get that?
 
-Yes, but it gets tricky.
+Yes, but it gets slightly trickier.
 
-The basic idea isn't complicated. We already know that if we split `x` into blocks, then we can get build the sparse representation in `O(n)`, so basically the question is if we can preprocess the blocks so we can handle the two `[i,ii)` and `[jj,j)` intervals in constant time, and we can.[^4]
+The basic idea isn't complicated. We already know that if we split `x` into blocks, then we can get build the sparse representation in $O(n)$, so basically the question is if we can preprocess the blocks so we can handle the two $[i,ii)$ and $[jj,j)$ intervals in constant time, and we can.[^4]
 
-There are several approaches to this, but they all boil down to having a big hunking table of all possible blocks, where each entry is a table like the first (fully tabulated) table we made. With such a table `T`, when you have `[i,j)` that's contained in the same block, you can figure out what kind of block you have, let's say it is called `B`, get the block table, `T[B]` and query `RMQ(i,j) = T[B][i,j]`.
+There are several approaches to this, but they all boil down to having a big hunking table of all possible blocks, where each entry is a table like the first (fully tabulated) table we made. With such a table $T$, when you have $[i,j)$ that's contained in the same block, you can figure out what kind of block you have, let's say it is called $B$, get the block table, $T[B]$ and query $\mathrm{RMQ}(i,j) = T[B][i \mod b,j \mod b]$.
 
 If we fully tabulate, then the size of a block-table, `T[B]`, is quadratic in the block size, `O(b²)`. That might not be too bad if there is only a constant number of them; if `b = log(n)` then `O(log²n)` in `O(n)` so no worries there. But there probably isn't a constant number of blocks. (That was sarcasm; there isn't a constant number of blocks). There will be some function of `n` blocks, say `B(n)` so fully tabulating takes time `O(B(n)*b²)`. The time should be fairly obvious; we are filling out `B(n)` tables in an approach we know takes `O(b²)` time.
 
