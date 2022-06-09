@@ -432,7 +432,7 @@ impl<'a> RMQ for Reduced<'a> {
 }
 ```
 
-Get block indices and the rounded points `ii` and `jj`. Then query the three intervals, `[i,ii)` and `[jj,j)` in `x` and `[bi,bj)` in the reduced data. All three intervals can be empty, and this is where I didn't want to bother checking for that. Since my `rmq` functions return `None` or `Some(...)` I don't have to check before the calls. I just have to write my code such that I can deal with `None`.
+Get block indices and the rounded points $ii$ and $jj$. Then query the three intervals, $[i,ii)$ and $[jj,j)$ in `x` and $[b_i,b_j)$ in the reduced data. All three intervals can be empty, and this is where I didn't want to bother checking for that. Since my `rmq` functions return `None` or `Some(...)` I don't have to check before the calls. I just have to write my code such that I can deal with `None`.
 
 The `Point::get()` function will return `None` if the index is `None`, so they either give me a `Some(Point(...))` with an index and a value, or they give me `None`.
 
@@ -457,7 +457,7 @@ So, the `p1`, `p2`, and `p3` hold the data I got from querying the three interva
 Easy peasy, right?
 
 
-## Can you get `<O(n),O(1)>`?
+## Can you get $\langle O(n),O(1) \rangle$?
 
 Since we probably have to look at all the elements, we can't hope for something `<o(n),o(n)>`, and linear time preprocessing with constant time queries is probably optimal in most applications. We are almost there, we have `O(n)` preprocessing and we have had `O(1)` queries, just not at the same time. Can we get that?
 
