@@ -491,7 +491,7 @@ That's a nasty exponential, but remember that $b$ can be logarithmic in $n$. Set
 
 Since we can build the sparse table in $O(n)$ and then the table of all the sub-tables in $O(n)$ we get linear time preprocessing, and the queries are constant time since we reuse the idea from the $\langle O(n),O(\log n) \rangle$ solution, but the $O(\log n)$ part of this algorithm is now replaced with a table lookup--find the sub-table for the two blocks in question and look up the answer there--and that is $O(1)$, and that is our $\langle O(n),O(1) \rangle$ solution.
 
-This is not a task for the programming club. Constructing Cartesian trees (or faking it, which is also possible) is move involved than what we have seen above. But if you feel up for it, it would be a good thesis topic!
+This is not a task for the programming club. Constructing Cartesian trees (or faking it, which is also possible) is more involved than what we have seen above. But if you feel up for it, it would be a good thesis topic!
 
 
 
