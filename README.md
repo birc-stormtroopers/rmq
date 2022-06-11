@@ -483,11 +483,19 @@ Then we preprocess each of the unique blocks. If there are $N_b$ of them, and th
 
 We can use the simple tabulation preprocessing to get $p(b)$ in $O(b^2)$, for example, as long as $N_b\in O(n/b^2)$.
 
-**FIXME: The description below is not updated
+
+There is an encoding of block types, that I shall get to shortly, that uses $2b$ bits to uniqly define a block. That puts an upper limit on the number of blocks at $2^{2b}=4^b$. That is exponential in $b$, which is scary, but the idea is to make block sizes logarithmic in $n$, and then we are back to something that might not be that terrible after all.
+
+If we say that $b=\frac{1}{k}\log_2 n$ for some $k$, then
+
+$$4^b = 4^{1/k\log_2 n} = 4^{2/k\log_4 n} = n^{2/k} = \left(\sqrt[k]{n}\right)^2$$
+
+**FIXME: The description below is not updated**
 
 If we fully tabulate, then the size of a block-table, $T[B_m]$, is quadratic in the block size, $O(b^2)$. That might not be too bad if there is only a constant number of them, and if $b = \log n$ then the quadratic size is $O(\log^2 n)$ in $O(n)$ so no worries there. But there probably isn't a constant number of blocks. (That was sarcasm; there isn't a constant number of blocks). There will be some function of $n$ blocks, what we denoted as $B(n)$ above, so fully tabulating takes time $O(B(n)\cdot b^2)$. The time should be fairly obvious; we are filling out $B(n)$ tables in an approach we know takes $O(b^2)$ time.
 
 The trick is to keep $B(n)$ small enough to keep $O(B(n)*b^2)$ in $O(n)$ while still keeping the block size large enough that $O(n/b \log(n/b))$ is also in $O(n)$.
+
 
 It is not a question of changing the block size. There will always be $n/b$ blocks, so if $B(n)$ is the number of block we have, $O(n/b \cdot b^2) = O(nb)$ will never be linear if $b > \log(n/b)$. We must map multiple blocks into the same table so we have fewer of the block-tables.
 
