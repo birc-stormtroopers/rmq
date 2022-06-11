@@ -494,7 +494,7 @@ and
 
 $$N_b\cdot p(b) = \left(\sqrt[k]{n}\right)^2 \cdot \log^2 n$$
 
-which is in $o(n)$ if $\sqrt[k]{n}\log n$ is in $o(\sqrt{n})$, which it is when $k>3$.
+which is in $o(n)$ if $\sqrt[k]{n}\log n$ is in $o(\sqrt{n})$, which it is when $k\geq 3$.
 
 From this we can conclude that even with the simple explicit tabulation technique we can get $\langle O(n),O(1) \rangle$ if we can map blocks down to "block types" so the number of types are bounded by $2^{2b}$.
 
