@@ -493,7 +493,7 @@ $$N_b = 4^b = 4^{\frac{1}{k}\log_2 n} = 4^{\frac{2}{k}\log_4 n}
 
 and
 
-$N_b\cdot p(b) = \left(\sqrt[k]{n}\right)^2 \cdot \log^2 n$$
+$$N_b\cdot p(b) = \left(\sqrt[k]{n}\right)^2 \cdot \log^2 n$$
 
 which is in $o(n)$ when $k>3$.
 
