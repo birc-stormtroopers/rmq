@@ -484,12 +484,11 @@ Then we preprocess each of the unique blocks. If there are $N_b$ of them, and th
 We can use the simple tabulation preprocessing to get $p(b)$ in $O(b^2)$, for example, as long as $N_b\in O(n/b^2)$.
 
 
-There is an encoding of block types, that I shall get to shortly, that uses $2b$ bits to uniqly define a block. That puts an upper limit on the number of blocks at $2^{2b}=4^b$. That is exponential in $b$, which is scary, but the idea is to make block sizes logarithmic in $n$, and then we are back to something that might not be that terrible after all.
+There is an encoding of block types, that I shall get to shortly, that uses $2b$ bits to uniqly define a block. That puts an upper limit on the number of blocks at $2^{2b}$. That is exponential in $b$, which is scary, but the idea is to make block sizes logarithmic in $n$, and then we are back to something that might not be that terrible after all.
 
 If we say that $b=\frac{1}{k}\log_2 n$ for some $k$, then
 
-$$N_b = 4^b = 4^{\frac{1}{k}\log_2 n} = 4^{\frac{2}{k}\log_4 n} 
-= n^{2/k} = \left(\sqrt[k]{n}\right)^2$$
+$$N_b = 2^{2b} = 2^{\frac{2}{k}\log_2 n} = n^{2/k} = \left(\sqrt[k]{n}\right)^2$$
 
 and
 
