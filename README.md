@@ -465,13 +465,25 @@ Yes, but it gets slightly trickier.
 
 The basic idea isn't complicated. We already know that if we split `x` into blocks, then we can get build the sparse representation in $O(n)$, so basically the question is if we can preprocess the blocks so we can handle the two $[i,ii)$ and $[jj,j)$ intervals in constant time, and we can.[^4]
 
-To remind you: if we take this approach, we split the array into blocks and use the reduced trick to handle any query $\mathrm{RMQ}(i,j)$ where $i$ and $j$ lies at the break point between blocks (i.e. both $i$ and $j$ at the first index of a block). If we have indices that do not lie on the border of blocks we need another approach. We might have to handle ranges $[i,j)$ where $i$ is not at the first index of a block but $j$ is, where $i$ is at the first index but $j$ isn't, and where neither $i$ nor $j$ are at borders. If we can handle any query $\mathrm{RMQ}(i,j)$ where $i$ and $j$ are in the same block (or $j$ just beyond the last index of the block), then we can handle all of these cases (as the first two are just special cases of the last).
+To remind you: if we take this approach, we split the array into blocks and use the reduced trick to handle any query $\mathrm{RMQ}(i,j)$ where $i$ and $j$ lies at the break point between blocks (i.e. both $i$ and $j$ at the first index of a block). If we have indices that do not lie on the border of blocks we need another approach. Here, we look do one or two look-ups within a block. Either we look up the interval between $i$ and $j$ inside a single block, or we look up the range minimum query from $i$ to the end of $i$'s block and the RMQ from the beginning of $j$'s block up to $j$.
 
-There are several approaches to handle this efficiently, but they all boil down to a general idea, also used in other applications. When you have some $n/b$ blocks, you might not need to construct a table for each of them independently. Some of those blocks might have the same structure, and then you can reuse the tables. Put another way, although there are $n/b$ blocks, there might only be some $B(n) < n/b$ *unique* blocks, so there might not be as much work to do as it appears at first glance.
+![Different block cases.](figs/rmq/using-blocks.png)
 
-What we do in cases like that is that we build some big hunking table, let's call it $T$, that contains all the unique blocks and tables. Call its size $B(n)$ (we will consider what this might be bounded by in a bit). So, $T$ contains $B(n)$ tables we can use to query RMQs in any given block "type". For each of the $n/b$ blocks in the array, $[b_i,b_{i+1})$, map the block to its "type", $[b_i,b_{i+1}) \mapsto B_i$, and use that to get the table in $T$, $T[B_i]$. So, when you need to query for $[i,j)$ in, say, block $m=i/b$, you query as this $\mathrm{RMQ}(i,j) = T[B_{i/b}][i \\% b,j \\% b]$ (where $k \\% b$ takes the remainder of $k$ with respect to $b$).
+If we can handle any query $\mathrm{RMQ}(i,j)$ in constant time when $i$ and $j$ are in the same block (or $j$ just beyond the last index of the block), then we can handle all of these cases (as the first two are just special cases of the last).
 
-**FIXME: a figure here**
+There are several approaches to handle this efficiently, but they all boil down to a general idea, also used in other applications. When you have some $n/b$ blocks, you might not need to construct a table for each of them independently. Some of those blocks might have the same structure, and then you can reuse the tables. Put another way, although there are $n/b$ blocks, there might only be some $N_b < n/b$ *unique* blocks, so there might not be as much work to do as it appears at first glance. The number of possible blocks depend on $b$ and not $n$.
+
+![Blocks versus unique blocks.](figs/rmq/reduce-to-unique-blocks.png)
+
+
+
+What we do in cases like that is that we build a table that contains each of the unique blocks, and we map each block in our input to its index in this table of blocks. If we can map each block to its index in this table in time $O(b)$ we can map all $n/b$ of them in time $O(n)$.
+
+Then we preprocess each of the unique blocks. If there are $N_b$ of them, and the preprocessing takes time $p(b)$, then we want $N_b\cdot p(b)$ to be in $O(n)$, 'cause if it is, the preprocessing ends up in $O(n)$.
+
+We can use the simple tabulation preprocessing to get $p(b)$ in $O(b^2)$, for example, as long as $N_b\in O(n/b^2)$.
+
+**FIXME: The description below is not updated
 
 If we fully tabulate, then the size of a block-table, $T[B_m]$, is quadratic in the block size, $O(b^2)$. That might not be too bad if there is only a constant number of them, and if $b = \log n$ then the quadratic size is $O(\log^2 n)$ in $O(n)$ so no worries there. But there probably isn't a constant number of blocks. (That was sarcasm; there isn't a constant number of blocks). There will be some function of $n$ blocks, what we denoted as $B(n)$ above, so fully tabulating takes time $O(B(n)\cdot b^2)$. The time should be fairly obvious; we are filling out $B(n)$ tables in an approach we know takes $O(b^2)$ time.
 
