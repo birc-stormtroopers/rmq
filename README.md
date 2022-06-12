@@ -498,6 +498,11 @@ which is in $o(n)$ if $\sqrt[k]{n}\log n$ is in $o(\sqrt{n})$, which it is when 
 
 From this we can conclude that even with the simple explicit tabulation technique we can get $\langle O(n),O(1) \rangle$ if we can map blocks down to "block types" so the number of types are bounded by $2^{2b}$.
 
+### Cartesian trees and RMQ
+
+It is not at all obvious that we can map blocks down to $2^{2b}$ numbers, and to get there, we need a detour through something called [Cartesian trees](https://en.wikipedia.org/wiki/Cartesian_tree). These are heap-like trees built on arrays, and their topology determines the RMQ query results we will get on that array.
+
+
 
 
 **FIXME: The description below is not updated**
