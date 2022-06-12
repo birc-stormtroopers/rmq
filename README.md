@@ -502,6 +502,30 @@ From this we can conclude that even with the simple explicit tabulation techniqu
 
 It is not at all obvious that we can map blocks down to $2^{2b}$ numbers, and to get there, we need a detour through something called [Cartesian trees](https://en.wikipedia.org/wiki/Cartesian_tree). These are heap-like trees built on arrays, and their topology determines the RMQ query results we will get on that array.
 
+To construct a Cartesian tree over an array, start by locating the smallest value in the array (or the left-most if there are more). Then make that the root of the tree, and split the array at that index.
+
+![Choosing the root of a Cartesian tree](figs/rmq/cartesian-tree-root.png)
+
+Now, you do the same thing recursively on the two sub-arrays you just created until you have a single element left in the array, which simply becomes a leaf.
+
+That is, at the next level after the first, find the smallest values on the left and right and split there.
+
+![First level under the root](figs/rmq/cartesian-tree-level-1.png)
+
+Split again after that.
+
+![Second level under the root](figs/rmq/cartesian-tree-level-2.png)
+
+And when you are all the way down, you have your Cartesian tree.
+
+![Completed Cartesian tree](figs/rmq/cartesian-tree-done.png)
+
+The Cartesian tree relates to RMQ in a quite simple way. Whenever you want $\mathrm{RMQ}(i,j)$, you pick the highest node in that range.
+
+![RMQ and Cartesian trees](figs/rmq/cartesian-tree-and-rmq.png)
+
+We are not going to *use* Cartesian trees for RMQ. We would have to search down to find the right range of values and such if we did (and of course you can if you want to), but this relationship between RMQ and Cartesian trees is interesting for us. If the topology of a Cartesian tree determines the result of all RMQ on the array--and it does if we always just pick the highest node--then the number of essentially different blocks is bounded by the number of Cartesian tree topologies. There may be an infinite number of possible blocks--it is arrays of integers, and there are certainly an infinite number of those--but there are not an infinite number of Cartesian tree topologies for arrays of a fixed size $b$.
+
 
 
 
