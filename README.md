@@ -526,31 +526,12 @@ The Cartesian tree relates to RMQ in a quite simple way. Whenever you want $\mat
 
 We are not going to *use* Cartesian trees for RMQ. We would have to search down to find the right range of values and such if we did (and of course you can if you want to), but this relationship between RMQ and Cartesian trees is interesting for us. If the topology of a Cartesian tree determines the result of all RMQ on the array--and it does if we always just pick the highest node--then the number of essentially different blocks is bounded by the number of Cartesian tree topologies. There may be an infinite number of possible blocks--it is arrays of integers, and there are certainly an infinite number of those--but there are not an infinite number of Cartesian tree topologies for arrays of a fixed size $b$.
 
+To see that the number of topologies is bounded by $O(2^{2b})$, and to get an algorithm for mapping a block to a number in the range $[0,2^{2b})$ that we can use for indexing into a table, we will look at a linear time algorithm for building Cartesian trees.[^5]
 
 
-
-**FIXME: The description below is not updated**
-
-If we fully tabulate, then the size of a block-table, $T[B_m]$, is quadratic in the block size, $O(b^2)$. That might not be too bad if there is only a constant number of them, and if $b = \log n$ then the quadratic size is $O(\log^2 n)$ in $O(n)$ so no worries there. But there probably isn't a constant number of blocks. (That was sarcasm; there isn't a constant number of blocks). There will be some function of $n$ blocks, what we denoted as $B(n)$ above, so fully tabulating takes time $O(B(n)\cdot b^2)$. The time should be fairly obvious; we are filling out $B(n)$ tables in an approach we know takes $O(b^2)$ time.
-
-The trick is to keep $B(n)$ small enough to keep $O(B(n)*b^2)$ in $O(n)$ while still keeping the block size large enough that $O(n/b \log(n/b))$ is also in $O(n)$.
+**FIXME: continue here**
 
 
-It is not a question of changing the block size. There will always be $n/b$ blocks, so if $B(n)$ is the number of block we have, $O(n/b \cdot b^2) = O(nb)$ will never be linear if $b > \log(n/b)$. We must map multiple blocks into the same table so we have fewer of the block-tables.
-
-How is that possible? Each block *could* be unique, after all; we have an array of ordered values and they don't have to be repetitive. This is true, but we don't care about the actual blocks; we care about the `RMQ` results we get on them. Two different blocks can return exactly the same for any `RMQ(i,j)`.
-
-One way to summarise the `RMQ` structure is using a so-called [Cartesian tree](https://en.wikipedia.org/wiki/Cartesian_tree). Two blocks with the same `RMQ` structure will have the same Cartesian tree topology. And you can build Cartesian trees is time $O(m)$ for a sequence of length $m$,[^5] and you can map them to numbers so they can become indices into a $T$ table. This means that we can map each block $B_m$ to a tree $t_m$ and get the index for that tree, $k_m = \mathrm{idx}(t)$. With an array of indices, one for each block, you know which entry in the big table of tables, $T[k_m]$, you need to do your query: $T[k_m][i,j]$. You can do this mapping in $O(n)$ because you have $n/b$ blocks and building the tree for a block takes time $b$, thus $O(n/b \cdot b) = O(n)$.
-
-We still have to be careful, though. We need to spend time $O(B(n)\cdot b^2)$ building all the tables after we have mapped the blocks, so even if we reduce blocks to Cartesian trees, the blocks can't be too long.
-
-A Cartesian tree is a binary tree and it will have $b$ nodes for a block of length $b$. There are $O(4^b / (b^{3/2}))$ binary tree topologies for trees with $b$ nodes--this isn't obvious but a result from combinatorics--so there are no more than $O(4^b / (b^{3/2}))$ Cartesian trees if the block size is $b$. For each tree it takes $O(b^2)$ time to build the corresponding RMQ table, so the total time to build all the tables is $O(4^b \cdot b^2 \cdot b^{-3/2})$ and since $b^2 \cdot b^{-3/2} = b^{2 - 3/2} = b^{1/2} = \sqrt{b}$ it will take $O(4^b \sqrt{b})$ time to build the tables.
-
-That's a nasty exponential, but remember that $b$ can be logarithmic in $n$. Set $b = \frac{1}{4} \log n$. The sparse stuff takes $O(n/b \log n/b) = O(4n/\log n \cdot \log(4n/\log n)) = O(n)$ so that is still fine. To build all the tables we get $O(4^b \sqrt{b}) = O(4^{\log(n)/4} \sqrt{1/4 \log n})$. Since $4^{1/4\log n} = \sqrt{n}$ this is $O(\sqrt{n} \cdot \sqrt{1/4 \log n})$ which is in $O(n)$. That means that we can build the table of tables as well in linear time.
-
-Since we can build the sparse table in $O(n)$ and then the table of all the sub-tables in $O(n)$ we get linear time preprocessing, and the queries are constant time since we reuse the idea from the $\langle O(n),O(\log n) \rangle$ solution, but the $O(\log n)$ part of this algorithm is now replaced with a table lookup--find the sub-table for the two blocks in question and look up the answer there--and that is $O(1)$, and that is our $\langle O(n),O(1) \rangle$ solution.
-
-This is not a task for the programming club. Constructing Cartesian trees (or faking it, which is also possible) is more involved than what we have seen above. But if you feel up for it, it would be a good thesis topic!
 
 
 
@@ -562,4 +543,4 @@ This is not a task for the programming club. Constructing Cartesian trees (or fa
 
 [^4]: It is not the only question, of course, you could also ask if there is a completely different approach to get there, but I don't know any such approaches, so I will pretend that you asked the first question.
 
-[^5]: To build a Cartesian tree in linear time you use an algorithm that resembles the algorithm we use to build suffix trees from suffix and lcp arrays in GSA. You scan left to right, keep track of the right backbone of the current tree, and you move upwards to insert a new node for each new index. The time analysis is also similar to that; you use an amortisation argument to show that moving up and down in the tree cannot take more than `O(m)` steps.
+[^5]: The algorithm where we split an array at the smallest value and the recursively construct the tree for the left and right array runs in $O(b)$ if the array is $b$ long, because we need to locate the smallest element in each recursive call. The linear time algorithm avoids this.
