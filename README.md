@@ -496,7 +496,7 @@ $$N_b\cdot p(b) = n^{2/k} \cdot \log^2 n = \left(n^{1/k}\log n\right)^2$$
 
 which is in $o(n)$ if $n^{1/k}\log n$ is in $o(n^{1/2})$.
 
-A completely general result is that for any $a>0$, $\log n \in o(n^a)$ (although it might require very large $n$ before the polynomial dominates the logarithm). That tells us $n^{1/k}\log n \in o(n^{2/k})$ so if we can pick a $k$ such that $2/k < 1/2$ we have a linear time algorithm for building all the small tables. Any $k\geq 4$ will obviously do.
+A completely general result is that for any $a>0$, $\log n \in o(n^a)$ (although it might require very large $n$ before the polynomial dominates the logarithm). That tells us $n^{1/k}\log n \in o(n^{2/k})$ so if we can pick a $k$ such that $2/k \leq 1/2$ we have a linear time algorithm for building all the small tables. Any $k\geq 4$ will obviously do.
 
 From this we can conclude that even with the simple explicit tabulation technique we can get $\langle O(n),O(1) \rangle$ if we can map blocks down to "block types" so the number of types are bounded by $2^{2b}$.
 
@@ -530,38 +530,86 @@ We are not going to *use* Cartesian trees for RMQ. We would have to search down 
 
 To see that the number of topologies is bounded by $O(2^{2b})$, and to get an algorithm for mapping a block to a number in the range $[0,2^{2b})$ that we can use for indexing into a table, we will look at a linear time algorithm for building Cartesian trees.[^5]
 
+The algorithm resembles the algorithm for building a suffix tree from a suffix array that we see in GSA. We scan along an array and build the tree left-to-right by searching up along the right-most edge of the current tree to find where we should insert the next node. It is just a little simpler than that algorithm.
 
-**FIXME: continue here**
+You start by adding the first element in the array to a tree. Usually, the algorithm is describes as just adding that node, but I find that implementing the algorithm is easier if you have a dummy node with value $-\infty$ as a root. We are going to search up as long as we have a value smaller than the node we are currently looking at, and that dummy element saves us from dealing with special cases when we move beyond the root.
+
+Anyway, create a tree with a dummy $0\infty$ node and then put the first element below it.
 
 ![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-1.png)
 
+Now, go to the next value in the array, and in your tree you search up up in tree until you sit on an edge between a value that is smaller than the current one and one that is larger. (This is where the dummy value is useful). In the example array we have used, the second element is 3, so we would search past the first element, with value 8. 
+
+On that edge, create a new node, and take the tree you moved past (in this case just a single node) and make it the left child of the new node.
+
+Now you should have the tree shown below. The nodes $-\infty$ and 3 are shown in black while the node we moved to the left child of 3 is shown in white. This is to distinguish between the right edge of the tree, the black nodes, and the part of the tree we have put in a left child of a node. The latter we will never see again, while the former are nodes we might have to search through to find the next place to put a node.
+
 ![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-2.png)
+
+The next value in the array is 6. Since six is greater than the rightmost node, 3, we are cannot search up to find an edge to put it on, but it will instead go to the right of 3. We don't move any nodes to a left tree because we do not move up the right edge of the tree, but we extend the right edge so it now consists of nodes, top to bottom, $-\infty$, 3, and 6.
 
 ![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-3.png)
 
+For the next value, 1, we must search up past node 6 and 3 to find an edge where we can place the new node. We put the 1 node there, and the nodes we moved past go into its left sub-tree. Now, these are alsso shown in white, because they are no longer part of the tree's right edge; they sit in the left child of a node instead.
+
 ![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-4.png)
+
+Value 4 is greater than 1, so we don't move up the tree and just put a 4 leaf as the rightmost child in the tree.
 
 ![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-5.png)
 
+With value 9, we do the same. Now the right edge of the tree is $-infty$, 1, 4, and 9 (while 8, 3, and 6 are sitting in the left tree of node 1).
+
 ![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-6.png)
+
+When we get to the final value, 2, we search up the tree until we get to the edge between 1 and 4. That is where the value 2 belongs, so we insert a node there. The values we searched past, 4 and 9, become the left child of node 2.
 
 ![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-7.png)
 
+Notice that when we move a tree on the right edge to left child of a new node we preserve the topology. When we constructed the sub-tree for 4 and 9 we added 9 as a right child of 4, and it remains a right child of 4 when we move the tree to the left child of node 2.
+
+
+Now I want you to think of the operations we did as stack operations. This makes the time analysis simpler (and is also the easiest way to implement the tree construction when you implement it). The right edge of the current tree is the stack. We start with a stack that contains $-\infty$ and our first operation is to *push* the first element in the array. That makes the first value the *top* of the stack and $-\infty$ the bottom. (Read the tree as an upside-down stack on the figures).
+
 ![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-1.png)
+
+Then when we see the next value in the array, we *pop* elements as long as the *top* is greater than the current value. When we see the value 3 we will *pop* 8, because it is greater than 3, and then we will stop because the new *top* is $-\infty < 3$. Once you are done *popping*, you *push* the new value onto the stack (with the popped elements as its left child).
 
 ![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-2.png)
 
+For the value 6, we cannot pop anything (the top 3 is less than 6) so we just push it.
+
 ![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-3.png)
 
+For the value 1 we pop 6 and 3 and then we can't pop $-\infty$ so we stop there and push 1.
+
 ![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-4.png)
+
+For falues 4 and 9 we can't pop anything but we can push the values.
 
 ![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-5.png)
 
 ![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-6.png)
 
+Finally, when we get to 2, we pop 9 and 4 and then push 2.
+
 ![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-7.png)
 
+When you consider the algorithm as operations on a stack, you immidiately get a linear running time. We push each value exactly once, so we have $b$ pushes. The number of pops varies, but we obviously cannot pop more elements than we push, so it is boundec by $b$. That tells us that the maximum number of operations is $2b$.
+
+Moreover, and this is where we get our bound on the number of different Cartesian trees and thus different RMQ block types, the stack operations and their order completely determines the Cartesian tree we are building. If someone gives us a valid sequence of push and pop instructions, we can construct the tree witout knowing anything about the values in the array we are building the tree over.
+
 ![Algorithm as a stack program](figs/rmq/stack-program.png)
+
+There are only two operations, push and pop, so we can encode those as bits, 1 for push and 0 for pop, for example, and that maps any tree construction program to a $2b$-bit integer.[^6]
+
+We don't need to build the trees for mapping blocks to unique types. The gray'ed out parts of the trees in the figure above are a consequence of the algorithm, but they do not add any information about the tree. A stack that just contains the values from the array will work just as well for determing how much you should pop between each push.
+
+So what we can do to map blocks to unique tables is now simple: run this construction algorithm to determine the push and pop operations, encode them as a $2b$-bit binary integer, and use that to map into a table of RMQ-tables. There are $n/b$ blocks and you can map in $O(b)$, so mapping blocks to tables take $O(n)$.
+
+Then, for each of the $2^{2b}$ tables, use the simple dynamic programming algorithm from far above to build the block-table in $b^2$ in total time $2^{2b}b^2 = n^{2/k}\log^2 n \in o(n)$ when $k\geq 4$.
+
+**FIXME: continue here**
 
 
 
@@ -574,3 +622,5 @@ To see that the number of topologies is bounded by $O(2^{2b})$, and to get an al
 [^4]: It is not the only question, of course, you could also ask if there is a completely different approach to get there, but I don't know any such approaches, so I will pretend that you asked the first question.
 
 [^5]: The algorithm where we split an array at the smallest value and the recursively construct the tree for the left and right array runs in $O(b)$ if the array is $b$ long, because we need to locate the smallest element in each recursive call. The linear time algorithm avoids this.
+
+[^6]: We always finish with a push, so you can leave the last 1-bit implicitly and save one bit--or a factor of two--from the size the block table, if you want.
