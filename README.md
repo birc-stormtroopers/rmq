@@ -531,7 +531,35 @@ To see that the number of topologies is bounded by $O(2^{2b})$, and to get an al
 
 **FIXME: continue here**
 
+![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-1.png)
 
+![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-2.png)
+
+![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-3.png)
+
+![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-4.png)
+
+![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-5.png)
+
+![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-6.png)
+
+![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-7.png)
+
+![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-1.png)
+
+![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-2.png)
+
+![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-3.png)
+
+![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-4.png)
+
+![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-5.png)
+
+![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-6.png)
+
+![Construction with stack operations](figs/rmq/cartesian-tree-left-right-stack-7.png)
+
+![Algorithm as a stack program](figs/rmq/stack-program.png)
 
 
 
