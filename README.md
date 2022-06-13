@@ -492,8 +492,7 @@ $$N_b = 2^{2b} = 2^{\frac{2}{k}\log_2 n} = n^{2/k}$$
 
 and
 
-$$N_b\cdot p(b) = n^{2/k} \cdot \log^2 n = 
-left(n^{1/k}\log n\right)^2$$
+$$N_b\cdot p(b) = n^{2/k} \cdot \log^2 n = left(n^{1/k}\log n\right)^2$$
 
 which is in $o(n)$ if $n^{1/k}\log n$ is in $o(n^{1/2})$.
 
