@@ -607,7 +607,7 @@ We don't need to build the trees for mapping blocks to unique types. The gray'ed
 
 So what we can do to map blocks to unique tables is now simple: run this construction algorithm to determine the push and pop operations, encode them as a $2b$-bit binary integer, and use that to map into a table of RMQ-tables. There are $n/b$ blocks and you can map in $O(b)$, so mapping blocks to tables take $O(n)$.
 
-Then, for each of the $2^{2b}$ tables, use the simple dynamic programming algorithm from far above to build the block-table in $b^2$ in total time $2^{2b}b^2 = n^{2/k}\log^2 n \in o(n)$ when $k\geq 4$.
+Then, for each of the $2^{2b}$ tables, use the simple dynamic programming algorithm from far above to build the block-table in $b^2$ in total time $\left(2^{b}b\right)^2 = \left(n^{1/k}\log n\right)^2 \in o(n)$ when $k\geq 4$.
 
 **FIXME: continue here**
 
