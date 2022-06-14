@@ -1,3 +1,65 @@
+/// Matrix -- just indexing with i,j
+pub mod matrix {
+    #[inline]
+    fn flat_index(i: usize, j: usize, n: usize) -> usize {
+        return i * n + j
+    }
+
+    /// Table for looking up any (i,j), 0 <= i, j < n
+    #[derive(Debug)]
+    pub struct Matrix {
+        n: usize,
+        table: Vec<usize>
+    }
+
+    impl Matrix {
+        pub fn new(n: usize) -> Matrix {
+            let table = vec![0; n * n];
+            Matrix { n, table }
+        }
+    }
+
+    impl std::ops::Index<(usize, usize)> for Matrix {
+        type Output = usize;
+        fn index(&self, index: (usize, usize)) -> &Self::Output {
+            let (i, j) = index;
+            assert!(i < self.n);
+            assert!(j < self.n);
+            &self.table[flat_index(i, j, self.n)]
+        }
+    }
+    
+    impl std::ops::IndexMut<(usize, usize)> for Matrix {
+        fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
+            let (i, j) = index;
+            assert!(i < self.n);
+            assert!(j < self.n);
+            &mut self.table[flat_index(i, j, self.n)]
+        }
+    }
+    
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        
+        #[test]
+        fn test_matrix() {
+            let n = 5;
+            let mut tbl = Matrix::new(n);
+            for i in 0..n {
+                for j in 0..n {
+                    tbl[(i,j)] = j;
+                }
+            }
+            for i in 0..n {
+                for j in 0..n {
+                    assert!(j == tbl[(i,j)]);
+                }
+            }
+        }
+    }
+}
+
 /// Upper-triangular tables
 pub mod triag {
     #[inline]

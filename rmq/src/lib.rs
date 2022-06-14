@@ -5,6 +5,7 @@ mod linear_query;
 mod tabulate;
 mod sparse;
 mod reduce;
+mod optimal;
 
 /*
 fn lift<A, B, C>(f: impl Fn(A, B)->C) -> impl Fn(Option<A>, Option<B>)->Option<C> {
