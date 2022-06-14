@@ -628,17 +628,53 @@ We do have linear preprocessing at this point, so all is good in that sense, but
 
 The *Ballot numbers* $B_{pq}$[^6] are defined as $B_{00} = 1$ and $B_{pq} = B_{(p-1)q} + B_{p(q-1)}$ when $0 \leq p \leq q \neq 0$ and $B_{pq} = 0$ otherwise. You can think of them as sitting in a grid, where $B_{pq}$ is the sum of the number immidiately to its left, $B_{(p-1)q}$, and immidiately above it, $B_{p(q-1)}$.
 
-**FIXME: figure**
+![Getting the value of a Ballot number](figs/ballot/B-with-neighbours.png)
 
-We usually don't draw the zero-valued numbers, so if we were to draw the ballot numbers up to $B_{55}$ we would draw something like this:
+We usually don't draw the zero-valued numbers, so if we were to draw the ballot numbers up to $B_{44}$ we would draw something like this:
 
-**FIXME: figure**
+![Ballot grid](figs/ballot/ballot-grid.png)
 
 If you don't want to compute the value of $B_{pq}$ recursively, a result from combinatorics is that $B_{pq} = \frac{q-p+1}{q+1}{p+q \choose p}$.
 
-There are two properties that make these new numbers interesting to us when we want to map Cartesian trees to numbers. The first is how they relate to the Catalan numbers, and thus to how many different topologies we can have for a tree with $b$ nodes. If you take the analytical formula for $B_{pq}$ and set $p=q=b$ you get $B_{bb} = \frac{b-b+1}{b+1}{b+b \choose b} = \frac{1}{b+1}{2b \choose b} = C_b$. Thus, when $p=q$, we have a Catalan number. The second property is that $B_{pq}$ is the number of paths you have from $B_{00}$ to $B_{pq}$ in the grid we just drew. To see this, consider that if you have to go through $B_{(p-1)q}$ or $B_{p(q-1)}$ to get to $B_{pq}$, then the number of paths there must be the sum of the paths that ends in the two predecessors.
+There are two properties that make these new numbers interesting to us when we want to map Cartesian trees to numbers. The first is how they relate to the Catalan numbers, and thus to how many different topologies we can have for a tree with $b$ nodes. If you take the analytical formula for $B_{pq}$ and set $p=q=b$ you get $B_{bb} = \frac{b-b+1}{b+1}{b+b \choose b} = \frac{1}{b+1}{2b \choose b} = C_b$. Thus, when $p=q$, we have a Catalan number. The second property is that $B_{pq}$ is the number of paths you have from $B_{pq}$ to $B_{00}$ in the grid we just drew. To see this, consider that you have to go through $B_{(p-1)q}$ or $B_{p(q-1)}$ when you are leaving $B_{pq}$, and the number of paths you from there are the values of those two numbers.
 
-If we look at the grid that goes down to $B_{bb}$ the number of paths from $B_{00}$ to $B_{bb}$ is thus exactly the number of binary trees we can have with $b$ leaves. If we can match each tree topology to a path in this grid, and each path in the grid to a number in $\{0,\ldots,C_b-1\}$, then we have the mapping we so much desire.
+If we look at the grid that goes from $B_{bb}$ to $B_{00}$ to $B_{bb}$, the total number of paths from $B_{bb}$ to $B_{00}$ is thus exactly the number of binary trees we can have with $b$ leaves. If we can match each tree topology to a path in this grid, and each path in the grid to a number in $\{0,\ldots,C_b-1\}$, then we have the mapping we so much desire.
+
+Mapping trees to paths is the easy part. We can basically reuse the idea we already have, with simulating constructing Cartesian trees with a stack. Instead of generating a binary number, however, we can consider the push and pop operations as directions to follow in the grid.
+
+First, though, I'll flip the grid both horisontally and vertically because I find it easier to read left-to-right and top-down. It's a cultural thing.
+
+![Flipped grid](figs/ballot/ballot-grid-flipped.png)
+
+When we trace a path through the grid, we start in $B_{bb}$ and move towards $B_{00}$. Whenever you push to the stack in the previous algorithm, move right, and whenever you pop, move down.
+
+As an example, consider the array `[8, 3, 6, 1]`. In the figures below, the arrow at the top shows where we are in processing the array--initially we are to the left of the first element--the arrow pointing to a node in the grid shows where we imagine that we are there, and the stack does its stack thing.
+
+We start with $-\infty$ on the stack and in the $B_{44}$ node.
+
+![Initial state in the path algorithm.](figs/ballot/path-in-grid-1.png)
+
+The first step is always a push, because we can't pop $-\infty$. That moves us one step to the right in the grid.
+
+![After first element.](figs/ballot/path-in-grid-2.png)
+
+The next value we see, 3, is less than 8, so we need to pop 8 off the stack and push 3 onto the stack. That takes us one node down with the pop and one node right with the push.
+
+![After second element.](figs/ballot/path-in-grid-3.png)
+
+When we then see 6, we can't pop 3, so we just push, moving us one node to the right in the grid.
+
+![After third element.](figs/ballot/path-in-grid-4.png)
+
+Finally, when we get to 1, we must pop both 6 and 3, moving us two nodes down, and then push 1, moving us right to the rightmost column.
+
+![After last element.](figs/ballot/path-in-grid-5.png)
+
+We are not yet at $B_{00}$, but just as we didn't care popping any remaining elements off the stack earlier, once we made it through the array, there isn't any need to continue to $B_{00}$. Once we make it to the rightmost column, there is only one possible path to $B_{00}$, we can just implicitly pretend that we take it.
+
+The grid nicely matches how our stack works. You have to push before you can pop, and in the grid you have to move right before you can move down, and you cannot move further down than you have moved right.
+
+All runs of the stack algorithm will take us $b$ steps to the right, after which the final part of the path is fixed, so running the Cartesian tree construction algorithm will always give us a corresponding path in the grid, and different trees will give us different paths. We have a mapping from block types (via Cartesian trees) to paths in the Ballot number graph.
 
 
 
