@@ -611,7 +611,15 @@ So what we can do to map blocks to unique tables is now simple: run this constru
 
 Then, for each of the $2^{2b}$ tables, use the simple dynamic programming algorithm from far above to build the block-table in $b^2$ in total time $2^{2b}b^2 = \left(n^{1/k}\log n\right)^2 \in o(n)$ when $k\geq 4$.
 
-The bound $2^{2b}$ for the number of block types is a little pessimistic, of course. We are putting exactly $b$ 1-bits into a $2b$-bit word, so a better upper bound is $b \choose 2b$.
+The bound $2^{2b}$ for the number of block types is a little pessimistic, of course. We are putting exactly $b$ 1-bits into a $2b$-bit word, so a better upper bound is $2b \choose b$, which is substantially less (see figure below where the y-axis is log-scaled). It is actually even better than this; a result from combinatorics is that the number of topologies for binary trees with $b$ nodes is bounded by the $b$'th Catalan number $C_b = \frac{1}{b+1}{2b \choose b}$.
+
+![Growth for increasingly more accurate upper bounds.](figs/growth-for-different-upper-bounds.png)
+
+This is only good new for our running time. The first upper bound, $2^{2b}$, gave us a linear time preprocessing, so if we have to process substantially less than that many tables we have an even faster algorithm. It also means, however, that if we build a table of size $2^{2b}$ for our block tables we will be wasting memory on empty entries, and the fraction we actually use decreases exponentially as $b$ increases.
+
+![Fraction of $2^{2b}$ table actually used](figs/fraction-of-exponential-table-used.png)
+
+
 
 **FIXME: continue here**
 
