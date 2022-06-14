@@ -619,6 +619,8 @@ This is only good new for our running time. The first upper bound, $2^{2b}$, gav
 
 ![Fraction of $2^{2b}$ table actually used](figs/fraction-of-exponential-table-used.png)
 
+To put this into concrete numbers, let's assume that $n$ fits into a 32-bit number, and let's simplify that as $n=2^{32}$. That means $\log_2 n = 32$ and $b = 1/4 \log_2 n = 8$. If we use a table of size $2^{2b}=2^{16}$ its size is 65,536. For the same $b$, $2b \choose b$ is only 12,870 and the 8'th Catalan number is only $\frac{1}{8+1}{16 \choose 8} = 12,870 / 9 = 1,430$, or about two percent of the table actualy used.
+
 
 
 **FIXME: continue here**
