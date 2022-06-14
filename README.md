@@ -623,7 +623,8 @@ To put this into concrete numbers, let's assume that $n$ fits into a 32-bit numb
 
 We do have linear preprocessing at this point, so all is good in that sense, but it is just wasting a lot of memory if we map blocks to $2b$-bit numbers and use an array to store tables. (A better representation of the table, such as a hash table, might alleviate this, but with some overhead). We can, however, improve on the idea and get a mapping from blocks to $\{0,1,\ldots,C_b-1\}$ thus wasting no memory if all blocks are present. It just requires a slight twist to the idea we already have. The twise requires some more math, but the implementation is as simple as if we had stopped here.
 
-### Ballot numbers and paths in "ballot grid"
+### Ballot numbers and paths in the "ballot grid"
+
 
 The *Ballot numbers* $B_{pq}$[^6] are defined as $B_{00} = 1$ and $B_{pq} = B_{(p-1)q} + B_{p(q-1)}$ when $0 \leq p \leq q \neq 0$ and $B_{pq} = 0$ otherwise. You can think of them as sitting in a grid, where $B_{pq}$ is the sum of the number immidiately to its left, $B_{(p-1)q}$, and immidiately above it, $B_{p(q-1)}$.
 
