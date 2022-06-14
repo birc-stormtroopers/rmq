@@ -676,6 +676,17 @@ The grid nicely matches how our stack works. You have to push before you can pop
 
 All runs of the stack algorithm will take us $b$ steps to the right, after which the final part of the path is fixed, so running the Cartesian tree construction algorithm will always give us a corresponding path in the grid, and different trees will give us different paths. We have a mapping from block types (via Cartesian trees) to paths in the Ballot number graph.
 
+To assign a unique number to each path, we will do something that might look odd at first. We will put a weight on the "push" edges, those going downwards. The weight at the rightmost column, that we don't really care about, can be zero if you want, or you can just ignore those. The number we assign a path is the sum of the edge weights it passes through, and the weight we put at an edge is the number in the node the edge *doesn't* lead to. That is, The edge $B_{pq} \to B_{p(q-1)}$ gets the weight $B_{(p-1)q}$.
+
+![Edge weights](figs/ballot/edge-numbers.png)
+
+It does look weird, but this is why. If you are at a given node, say $B_{34}$ and you go down instead of right, you want the count from that point on to start after all the numbers you have assigned if you went right instead. The value to your right is exactly how many paths there are to the right, so if you start counting from that point, by adding this particular weight to the path, the paths that go right can be counted below that number.
+
+![Counts of paths](figs/ballot/path-count.png)
+
+In other words, by adding the total number of paths on the right, we reserve numbers from those, and we can count from the next value as we continue.
+
+I realise that there are a lot of ideas in play at this point--Cartesian trees that capture the structure of RMQ queries, stack machines that encode Cartesian trees, and now paths in Ballot number grids. It is a lot to wrap your head around. The good news is that, overwhelming as it seems, it is not terribly more complicated to implement this than the structures we have already seen implementations of.
 
 
 **FIXME: continue here**
