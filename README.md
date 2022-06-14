@@ -611,11 +611,11 @@ So what we can do to map blocks to unique tables is now simple: run this constru
 
 Then, for each of the $2^{2b}$ tables, use the simple dynamic programming algorithm from far above to build the block-table in $b^2$ in total time $2^{2b}b^2 = \left(n^{1/k}\log n\right)^2 \in o(n)$ when $k\geq 4$.
 
-The bound $2^{2b}$ for the number of block types is a little pessimistic, of course. We are putting exactly $b$ 1-bits into a $2b$-bit word, so a better upper bound is $2b \choose b$, which is substantially less (see figure below where the y-axis is log-scaled). It is actually even better than this; a result from combinatorics is that the number of topologies for binary trees with $b$ nodes is bounded by the $b$'th Catalan number $C_b = \frac{1}{b+1}{2b \choose b}$.
+The bound $2^{2b}$ for the number of block types is a little pessimistic, of course. We are putting exactly $b$ 1-bits into a $2b$-bit word, so a better upper bound is $2b \choose b$, which is substantially less (see figure below where the y-axis is log-scaled). It is actually even better than this; a result from combinatorics is that the number of topologies for binary trees with $b$ nodes is bounded by the $b$'th [Catalan number](https://en.wikipedia.org/wiki/Catalan_number) $C_b = \frac{1}{b+1}{2b \choose b}$.
 
 ![Growth for increasingly more accurate upper bounds.](figs/growth-for-different-upper-bounds.png)
 
-This is only good new for our running time. The first upper bound, $2^{2b}$, gave us a linear time preprocessing, so if we have to process substantially less than that many tables we have an even faster algorithm. It also means, however, that if we build a table of size $2^{2b}$ for our block tables we will be wasting memory on empty entries, and the fraction we actually use decreases exponentially as $b$ increases.
+This is only good new for our running time. The first upper bound, $2^{2b}$, gave us a linear time preprocessing, so if we have to process substantially less than that many tables we have an even faster algorithm. It also means, however, that if we build a table of size $2^{2b}$ for our block tables we will be wasting memory on empty entries, and the fraction we actually use decreases rapidly as $b$ increases.
 
 ![Fraction of $2^{2b}$ table actually used](figs/fraction-of-exponential-table-used.png)
 
@@ -623,7 +623,21 @@ To put this into concrete numbers, let's assume that $n$ fits into a 32-bit numb
 
 We do have linear preprocessing at this point, so all is good in that sense, but it is just wasting a lot of memory if we map blocks to $2b$-bit numbers and use an array to store tables. (A better representation of the table, such as a hash table, might alleviate this, but with some overhead). We can, however, improve on the idea and get a mapping from blocks to $\{0,1,\ldots,C_b-1\}$ thus wasting no memory if all blocks are present. It just requires a slight twist to the idea we already have. The twise requires some more math, but the implementation is as simple as if we had stopped here.
 
-### Ballot numbers and paths in "ballot graphs"
+### Ballot numbers and paths in "ballot grid"
+
+The *Ballot numbers* $B_{pq}$[^6] are defined as $B_{00} = 1$ and $B_{pq} = B_{(p-1)q} + B_{p(q-1)}$ when $0 \leq p \leq q \neq 0$ and $B_{pq} = 0$ otherwise. You can think of them as sitting in a grid, where $B_{pq}$ is the sum of the number immidiately to its left, $B_{(p-1)q}$, and immidiately above it, $B_{p(q-1)}$.
+
+**FIXME: figure**
+
+We usually don't draw the zero-valued numbers, so if we were to draw the ballot numbers up to $B_{55}$ we would draw something like this:
+
+**FIXME: figure**
+
+If you don't want to compute the value of $B_{pq}$ recursively, a result from combinatorics is that $B_{pq} = \frac{q-p+1}{q+1}{p+q \choose p}$.
+
+There are two properties that make these new numbers interesting to us when we want to map Cartesian trees to numbers. The first is how they relate to the Catalan numbers, and thus to how many different topologies we can have for a tree with $b$ nodes. If you take the analytical formula for $B_{pq}$ and set $p=q=b$ you get $B_{bb} = \frac{b-b+1}{b+1}{b+b \choose b} = \frac{1}{b+1}{2b \choose b} = C_b$. Thus, when $p=q$, we have a Catalan number. The second property is that $B_{pq}$ is the number of paths you have from $B_{00}$ to $B_{pq}$ in the grid we just drew. To see this, consider that if you have to go through $B_{(p-1)q}$ or $B_{p(q-1)}$ to get to $B_{pq}$, then the number of paths there must be the sum of the paths that ends in the two predecessors.
+
+If we look at the grid that goes down to $B_{bb}$ the number of paths from $B_{00}$ to $B_{bb}$ is thus exactly the number of binary trees we can have with $b$ leaves. If we can match each tree topology to a path in this grid, and each path in the grid to a number in $\{0,\ldots,C_b-1\}$, then we have the mapping we so much desire.
 
 
 
@@ -640,3 +654,5 @@ We do have linear preprocessing at this point, so all is good in that sense, but
 [^4]: It is not the only question, of course, you could also ask if there is a completely different approach to get there, but I don't know any such approaches, so I will pretend that you asked the first question.
 
 [^5]: The algorithm where we split an array at the smallest value and the recursively construct the tree for the left and right array runs in $O(b)$ if the array is $b$ long, because we need to locate the smallest element in each recursive call. The linear time algorithm avoids this.
+
+[^6]: I use the notation $B_{pq}$ rather than $C_{pq}$ used in the literature to distinguish ballot numbers from Catalan numbers--although the two are intimately related, as we shall see.
