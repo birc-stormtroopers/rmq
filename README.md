@@ -601,7 +601,7 @@ Moreover, and this is where we get our bound on the number of different Cartesia
 
 ![Algorithm as a stack program](figs/rmq/stack-program.png)
 
-There are only two operations, push and pop, so we can encode those as bits, 1 for push and 0 for pop, for example, and that maps any tree construction program to a $2b$-bit integer.[^6]
+There are only two operations, push and pop, so we can encode those as bits, 1 for push and 0 for pop, for example, and that maps any tree construction program to a $2b$-bit integer.
 
 We don't need to build the trees for mapping blocks to unique types. The gray'ed out parts of the trees in the figure above are a consequence of the algorithm, but they do not add any information about the tree. A stack that just contains the values from the array will work just as well for determing how much you should pop between each push.
 
@@ -610,6 +610,8 @@ We don't need to build the trees for mapping blocks to unique types. The gray'ed
 So what we can do to map blocks to unique tables is now simple: run this construction algorithm to determine the push and pop operations, encode them as a $2b$-bit binary integer, and use that to map into a table of RMQ-tables. There are $n/b$ blocks and you can map in $O(b)$, so mapping blocks to tables take $O(n)$.
 
 Then, for each of the $2^{2b}$ tables, use the simple dynamic programming algorithm from far above to build the block-table in $b^2$ in total time $2^{2b}b^2 = \left(n^{1/k}\log n\right)^2 \in o(n)$ when $k\geq 4$.
+
+The bound $2^{2b}$ for the number of block types is a little pessimistic, of course. We are putting exactly $b$ 1-bits into a $2b$-bit word, so a better upper bound is $b \choose 2b$.
 
 **FIXME: continue here**
 
@@ -624,5 +626,3 @@ Then, for each of the $2^{2b}$ tables, use the simple dynamic programming algori
 [^4]: It is not the only question, of course, you could also ask if there is a completely different approach to get there, but I don't know any such approaches, so I will pretend that you asked the first question.
 
 [^5]: The algorithm where we split an array at the smallest value and the recursively construct the tree for the left and right array runs in $O(b)$ if the array is $b$ long, because we need to locate the smallest element in each recursive call. The linear time algorithm avoids this.
-
-[^6]: We always finish with a push, so you can leave the last 1-bit implicitly and save one bit--or a factor of two--from the size the block table, if you want.
