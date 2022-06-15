@@ -741,6 +741,10 @@ fn block_type(block: &[usize], b: usize, stack: &mut [i64], ballot: &matrix::Mat
 }
 ```
 
+I switch to signed numbers for the stack so I can use the smallest 64-bit integer as minus infinity. If I started from scratch instead of building the algorithms in sequence, I might have thought more about the appropriate type to begin with, but I didn't.
+
+To look up the correct Ballot number when I need to add an edge weight I explit that the index into the block moves from 0 to $b-1$ and which is the reverse of the move in $p$ coordinates in the grid, so $p = b - i$. The $q$ coordiate is how many times I have popped, which I don't have, but I know how deep the stack is (the `top` variable) and I know how many times I've pushed (the `i` index), so I have $q=b-(i-\mathrm{top})$.
+
 To get all block types and tables, we run through the blocks and compute the number, if we hit a new number, i.e. if the table of tables doesn't already have a table for that number, we build the table the way we did with the simple $O(n^2)$ algorithm:
 
 ```rust
