@@ -495,7 +495,7 @@ and
 $$N_b\cdot p(b) = n^{2/k} \cdot \log^2 n.$$
 
 
-A completely general result is that $\log n \in o(n^a)$ for any $a>0$ (although it might require very large $n$ before the polynomial dominates the logarithm). 
+A completely general result is that $\log_e n \in o(n^a)$ for any $a>0$ and base $e$ (although it might require very large $n$ before the polynomial dominates the logarithm). 
 
 It follows then that we have 
 
