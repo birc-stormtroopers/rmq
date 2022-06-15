@@ -112,7 +112,11 @@ There is a really neat trick when you need to tabulate intervals. It doesn't alw
 
 Of course, we don't want to go back to *no* table again, there queries were too expensive, but there is a trick that gives us constant time queries with only $O(n \log n)$ preprocessing time.[^1]
 
-What we will do is this: we tabulate `tbl[i,k] = rmq(x, i, i+2**k)` for all `i` and all powers of two `2**k <= n`. There are only $\log n$ such powers of two, so the table only has have $O(n \log n)$ entries, and if we can compute an entry in constant time we have $O(n \log n)$ preprocessing. The trick for that is once again dynamic programming. If you want to know $\mathrm{RMQ}(i,i+2^k)$ you will already have computed $\mathrm{RMQ}(i,i+2^{k-1})$ and $\mathrm{RMQ}(i+2^{k-1},i+2^k)$, so you just have to get the values there and pick the best.
+What we will do is this: we tabulate `tbl[i,k] = rmq(x, i, i+2**k)` for all `i` and all powers of two `2**k <= n`. 
+
+There are only $\log n$ such powers of two, so the table only has have $O(n \log n)$ entries, and if we can compute an entry in constant time we have $O(n \log n)$ preprocessing.
+
+The trick for that is once again dynamic programming. If you want to know $\mathrm{RMQ}(i,i+2^k)$ you will already have computed $\mathrm{RMQ}(i,i+2^{k-1})$ and $\mathrm{RMQ}(i+2^{k-1},i+2^k)$, so you just have to get the values there and pick the best.
 
 Before I show you the code, though, I need to show you a few additional tricks. Some of Rust specific--but you can achieve similar things in other languages--and others are just general ways of moving complexity from one place to another and making your code simpler in the process.
 
