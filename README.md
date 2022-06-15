@@ -492,9 +492,8 @@ $$N_b = 2^{2b} = 2^{\frac{2}{k}\log_2 n} = n^{2/k}$$
 
 and
 
-$$N_b\cdot p(b) = n^{2/k} \cdot \log^2 n = \left(n^{1/k}\log n\right)^2$$
+$$N_b\cdot p(b) = n^{2/k} \cdot \log^2 n.$$
 
-which is in $o(n)$ if $n^{1/k}\log n$ is in $o(n^{1/2})$.
 
 A completely general result is that $\log n \in o(n^a)$ for any $a>0$ (although it might require very large $n$ before the polynomial dominates the logarithm). 
 
@@ -518,7 +517,13 @@ and
 
 $$n^{1/k} \log^2 n \in o(n^{2/k}).$$
 
-That tells us $n^{1/k}\log n \in o(n^{2/k})$ so if we can pick a $k$ such that $2/k \leq 1/2$ we have a linear time algorithm for building all the small tables. Any $k\geq 4$ will obviously do.
+To get a linear time algorithm, we just need to pick a $k$ so $n^{2/k} \in O(n)$, so any $k>2$ will do.
+
+If we had used base-four logarithms instead, the math would have looked a little nicer. The number of bits are still $2^{2b}$ but this is $4^b$ and with a base-four logarithm we would have
+
+$$4^b b^2 = 4^{1/k\log_4 n} 1/k\log_4 n = n^{1/k} \log_4 n$$
+
+which is dominated by $o(n)$ when 
 
 From this we can conclude that even with the simple explicit tabulation technique we can get $\langle O(n),O(1) \rangle$ if we can map blocks down to "block types" so the number of types are bounded by $2^{2b}$.
 
