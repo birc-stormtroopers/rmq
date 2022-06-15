@@ -513,23 +513,15 @@ That means that our complexity is
 
 $$n^{2/k} \cdot \log^2 n \in o(n^{2/k} n^a)$$
 
-for *any* $a>0$ which means the complexity is in $o(n^{2/k+\epsilon})$.
-
-$$\log^2 n \in o(n^a)$$
-
-for any $a>0$ and thus that
-
-$$n^{2/k} \log^2 n \in o(n^{2/k+a}).$$
-
-To get a linear time algorithm, we just need to pick a $k$ so $n^{2/k} \in O(n)$, so any $k>2$ will do.
+for *any* $a>0$ which means the complexity is in $o(n^{2/k+\epsilon})$. That means that for any choice of $k$ such that $2/k \leq 1-\epsilon$, our complexity is in $O(n)$. Basically, any $k>2$ will do the trick (although it *does* matter for the time in practise what you choose).
 
 If we had used base-four logarithms instead, the math would have looked a little nicer. The number of bits are still $2^{2b}$ but this is $4^b$ and with a base-four logarithm we would have
 
 $$4^b b^2 = 4^{1/k\log_4 n} 1/k\log_4 n = n^{1/k} \log_4 n$$
 
-which is dominated by $o(n)$ when 
+and we could go with any $k>1$. The factor of two difference, of course, is the conversion factor between base-two and base-four logarithms.
 
-From this we can conclude that even with the simple explicit tabulation technique we can get $\langle O(n),O(1) \rangle$ if we can map blocks down to "block types" so the number of types are bounded by $2^{2b}$.
+Anyway, from all this we can conclude that even with the simple explicit tabulation technique we can get $\langle O(n),O(1) \rangle$ if we can map blocks down to "block types" so the number of types are bounded by $2^{2b}$.
 
 ### Cartesian trees and RMQ
 
