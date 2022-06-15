@@ -505,11 +505,15 @@ by just squaring the two, and since it is for any $a>0$ we don't have to square 
 
 $$\log^2 n \in o(n^a)$$
 
-for any $a>0$. 
+for any $a>0$.
 
 The logarithm, even squared, is dominated eventually by any polynomial with a positive exponent. (Emphasis on *eventually*; it can take very big $n$).
 
-That then means that
+That means that our complexity is
+
+$$n^{2/k} \cdot \log^2 n \in o(n^{2/k} n^a)$$
+
+for *any* $a>0$ which means the complexity is in $o(n^{2/k+\epsilon})$.
 
 $$\log^2 n \in o(n^a)$$
 
