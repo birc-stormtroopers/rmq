@@ -498,7 +498,9 @@ which is in $o(n)$ if $n^{1/k}\log n$ is in $o(n^{1/2})$.
 
 A completely general result is that $\log n \in o(n^a)$ for any $a>0$ (although it might require very large $n$ before the polynomial dominates the logarithm). 
 
-It follows that $\log^2 n \in o(n^{2a})$ for any $a>0$ so any polynomial $n^a$ will dominate $\log^2 n$ eventually.
+It follows then that $\log^2 n \in o(n^{2a})$ by just squaring the two.
+
+for any $a>0$ so any polynomial $n^a$ will dominate $\log^2 n$ eventually.
 
 That tells us $n^{1/k}\log n \in o(n^{2/k})$ so if we can pick a $k$ such that $2/k \leq 1/2$ we have a linear time algorithm for building all the small tables. Any $k\geq 4$ will obviously do.
 
