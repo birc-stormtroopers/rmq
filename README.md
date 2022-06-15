@@ -508,7 +508,7 @@ $$\log^2 n \in o(n^a)$$
 
 for any $a>0$. 
 
-So any polynomial $n^a$ will dominate $\log^2 n$ eventually (emphasis on eventually, it can take very big $n$).
+So any polynomial $n^a, a>0$ will dominate $\log^2 n$ eventually (emphasis on eventually, it can take very big $n$).
 
 That then means that
 
