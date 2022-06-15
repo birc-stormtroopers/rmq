@@ -782,37 +782,33 @@ fn tabulate_blocks(x: &[usize], b: usize) -> (Vec<usize>, Vec<Option<tabulate::T
 
 The data structure we need need for this preprocessed table looks much like the reduced table we had earlier, we just have to add the vectors of block types and block types, and I won't list it here (but you can see it in the code in `rmq/rmq/src/optimal.rs`). Nor will I list all the code for using it. The interesting bits are the code for looking up a query $[i,j)$ where both $i$ and $j$ are in the same block. There, we need to get the correct block and there perform the query, where we have adjusted the indices so they are relative to the beginning of the block. When we have performed the query, we need to adjust the result in the other direction, translating it back from an offset into the block to its index in the full data.
 
-
-**FIXME: continue here**
+In my implementation, I first check if the interval I am looking at is valid (`i < j`) since I can return `None` immidiately if it isn't. The block tables will also handle it, but there is no need to go through all the book keeping if the result will be `None` anyway. In addition, it handles the special case where we look at the range $[n,n)$ which occurs when $j$ points to the end of the array and $n$ is a multiple of the block size. Here, we would either have to put a table for an empty block, or we would have to explicitly return `None` anyway.
 
 ```rust
-    fn block_rmq(&self, i: usize, j: usize) -> Option<Point> {
-        if i == j {
-            // We occationally query with an empty interval, and this makes
-            // that case faster. It also eliminates a special case when i=j=n
-            // where we would look at the last block, which might not be there
-            // if n is a multiple of the block size.
-            return None;
-        }
-
+fn block_rmq(&self, i: usize, j: usize) -> Option<Point> {
+    if i < j {
         // Get misc values and tables we need...
         let BlockSize(bs) = self.block_size();
         let block_index = i / bs; // The index in the list of blocks
         let block_begin = block_index * bs; // The index the block starts at in x
-
         let block_types = self.0.borrow_block_types();
         let block_tables = self.0.borrow_block_tables();
-
         // Get the table for this block by looking up the block type and then the
         // table from the block type.
         let tbl = block_tables[block_types[block_index]].as_ref().unwrap();
-
         // Get RMQ and adjust the index back up, so it is relative to the start of the block.
         let rmq_idx = Some(tbl.rmq(i - block_begin, j - block_begin)? + block_begin);
-        return Point::get(rmq_idx, self.x());
+        Point::get(rmq_idx, self.x())
+    } else {
+        // j <= i so not a valid interval.
+        None
     }
 }
+```
 
+Finally, we need to implement the actual RMQ operation. This one looks much like the earlier "reduced" solution. We first get the block indices for the range. Here, we always want to round down to get the indices for the block tables, but for the reduced part, we need to round up for `i` to get the first block the reduced table handles. So we get two block indices for $i$. For $j$, both tables round down, so we don't need an extra index there. The `round_up()` and `round_down()` functions we used for the reduced solution give us indices for the other ends of the blocks where $i$ and $j$ sits, just as before, and just as we used these for a linear scan earlier, we can now use them to look up RMQ in the corresponding blocks.
+
+```rust
 impl<'a> RMQ for Optimal<'a> {
     fn rmq(&self, i: usize, j: usize) -> Option<usize> {
         let BlockSize(bs) = self.block_size();
@@ -820,13 +816,12 @@ impl<'a> RMQ for Optimal<'a> {
         // sparse table. For the sparse table we have to round up for i, but
         // to get the block i is in, we need to round down.
         let bi = BlockIdx(i / bs);
-        let bj = BlockIdx(j / bs);
         let (sparse_bi, ii) = round_up(i, BlockSize(bs));
-        let (sparse_bj, jj) = round_down(j, BlockSize(bs));
+        let (bj, jj) = round_down(j, BlockSize(bs));
 
         if bi < bj {
             let p1 = self.block_rmq(i, ii);
-            let p2 = Point::get(self.sparse_rmq(sparse_bi, sparse_bj), self.x());
+            let p2 = Point::get(self.sparse_rmq(sparse_bi, bj), self.x());
             let p3 = self.block_rmq(jj, j);
             let min = super::lift_op(cmp::min);
             Some(min(min(p1, p2), p3)?.0)

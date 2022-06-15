@@ -143,29 +143,26 @@ impl<'a> Optimal<'a> {
     }
 
     fn block_rmq(&self, i: usize, j: usize) -> Option<Point> {
-        if i == j {
-            // We occationally query with an empty interval, and this makes
-            // that case faster. It also eliminates a special case when i=j=n
-            // where we would look at the last block, which might not be there
-            // if n is a multiple of the block size.
-            return None;
+        if i < j {
+            // Get misc values and tables we need...
+            let BlockSize(bs) = self.block_size();
+            let block_index = i / bs; // The index in the list of blocks
+            let block_begin = block_index * bs; // The index the block starts at in x
+
+            let block_types = self.0.borrow_block_types();
+            let block_tables = self.0.borrow_block_tables();
+
+            // Get the table for this block by looking up the block type and then the
+            // table from the block type.
+            let tbl = block_tables[block_types[block_index]].as_ref().unwrap();
+
+            // Get RMQ and adjust the index back up, so it is relative to the start of the block.
+            let rmq_idx = Some(tbl.rmq(i - block_begin, j - block_begin)? + block_begin);
+            Point::get(rmq_idx, self.x())
+        } else {
+            // j <= i so not a valid interval.
+            None
         }
-
-        // Get misc values and tables we need...
-        let BlockSize(bs) = self.block_size();
-        let block_index = i / bs; // The index in the list of blocks
-        let block_begin = block_index * bs; // The index the block starts at in x
-
-        let block_types = self.0.borrow_block_types();
-        let block_tables = self.0.borrow_block_tables();
-
-        // Get the table for this block by looking up the block type and then the
-        // table from the block type.
-        let tbl = block_tables[block_types[block_index]].as_ref().unwrap();
-
-        // Get RMQ and adjust the index back up, so it is relative to the start of the block.
-        let rmq_idx = Some(tbl.rmq(i - block_begin, j - block_begin)? + block_begin);
-        return Point::get(rmq_idx, self.x());
     }
 }
 
@@ -176,13 +173,12 @@ impl<'a> RMQ for Optimal<'a> {
         // sparse table. For the sparse table we have to round up for i, but
         // to get the block i is in, we need to round down.
         let bi = BlockIdx(i / bs);
-        let bj = BlockIdx(j / bs);
         let (sparse_bi, ii) = round_up(i, BlockSize(bs));
-        let (sparse_bj, jj) = round_down(j, BlockSize(bs));
+        let (bj, jj) = round_down(j, BlockSize(bs));
 
         if bi < bj {
             let p1 = self.block_rmq(i, ii);
-            let p2 = Point::get(self.sparse_rmq(sparse_bi, sparse_bj), self.x());
+            let p2 = Point::get(self.sparse_rmq(sparse_bi, bj), self.x());
             let p3 = self.block_rmq(jj, j);
             let min = super::lift_op(cmp::min);
             Some(min(min(p1, p2), p3)?.0)
