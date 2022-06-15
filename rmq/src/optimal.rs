@@ -20,7 +20,7 @@ mod number {
         let b = block.len();
         let mut num = 0;
         let mut top = 0;
-        stack[top] = i64::MIN;
+        stack[top] = i64::MIN; // As close to -infinity as we get with this type...
 
         for (i, &v) in block.iter().enumerate() {
             let signed_v = v as i64;
