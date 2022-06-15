@@ -492,7 +492,7 @@ $$N_b = 2^{2b} = 2^{\frac{2}{k}\log_2 n} = n^{2/k}$$
 
 and
 
-$$N_b\cdot p(b) = n^{2/k} \cdot (1/k^2) \log^2 n \in O(n^{2/k}\log^2 n).$$
+$$N_b\cdot p(b) = n^{2/k} \cdot (1/k^2) \cdot \log^2 n \in O(n^{2/k}\log^2 n).$$
 
 
 A completely general result is that $\log_e n \in o(n^a)$ for any $a>0$ and base $e$ (although it might require very large $n$ before the polynomial dominates the logarithm). 
@@ -517,7 +517,7 @@ for *any* $a>0$ which means the complexity is in $o(n^{2/k+\epsilon})$. That mea
 
 If we had used base-four logarithms instead, the math would have looked a little nicer. The number of bits are still $2^{2b}$ but this is $4^b$ and with a base-four logarithm we would have
 
-$$4^b b^2 = 4^{\frac{1}{k}\log_4 n} (1/k)\log_4 n = n^{1/k} \log_4 n$$
+$$4^b b^2 = 4^{\frac{1}{k}\log_4 n} (1/k^2)\log_4^2 n \in O(n^{1/k} \log^2_4 n)$$
 
 and we could go with any $k>1$. The factor of two difference, of course, is the conversion factor between base-two and base-four logarithms.
 
