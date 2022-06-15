@@ -506,7 +506,15 @@ by just squaring the two, and since it is for any $a>0$ we don't have to square 
 
 $$\log^2 n \in o(n^a)$$
 
-for any $a>0$ so any polynomial $n^a$ will dominate $\log^2 n$ eventually (emphasis on eventually, it can take very big $n$).
+for any $a>0$. So any polynomial $n^a$ will dominate $\log^2 n$ eventually (emphasis on eventually, it can take very big $n$).
+
+That then means that
+
+$$\log^2 n \in o(n^{1/k})$$
+
+and
+
+$$n^{1/k} \log^2 n \in o(n^{2/k}).$$
 
 That tells us $n^{1/k}\log n \in o(n^{2/k})$ so if we can pick a $k$ such that $2/k \leq 1/2$ we have a linear time algorithm for building all the small tables. Any $k\geq 4$ will obviously do.
 
