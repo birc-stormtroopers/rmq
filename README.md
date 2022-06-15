@@ -780,10 +780,62 @@ fn tabulate_blocks(x: &[usize], b: usize) -> (Vec<usize>, Vec<Option<tabulate::T
 }
 ```
 
+The data structure we need need for this preprocessed table looks much like the reduced table we had earlier, we just have to add the vectors of block types and block types, and I won't list it here (but you can see it in the code in `rmq/rmq/src/optimal.rs`). Nor will I list all the code for using it. The interesting bits are the code for looking up a query $[i,j)$ where both $i$ and $j$ are in the same block. There, we need to get the correct block and there perform the query, where we have adjusted the indices so they are relative to the beginning of the block. When we have performed the query, we need to adjust the result in the other direction, translating it back from an offset into the block to its index in the full data.
 
 
 **FIXME: continue here**
 
+```rust
+    fn block_rmq(&self, i: usize, j: usize) -> Option<Point> {
+        if i == j {
+            // We occationally query with an empty interval, and this makes
+            // that case faster. It also eliminates a special case when i=j=n
+            // where we would look at the last block, which might not be there
+            // if n is a multiple of the block size.
+            return None;
+        }
+
+        // Get misc values and tables we need...
+        let BlockSize(bs) = self.block_size();
+        let block_index = i / bs; // The index in the list of blocks
+        let block_begin = block_index * bs; // The index the block starts at in x
+
+        let block_types = self.0.borrow_block_types();
+        let block_tables = self.0.borrow_block_tables();
+
+        // Get the table for this block by looking up the block type and then the
+        // table from the block type.
+        let tbl = block_tables[block_types[block_index]].as_ref().unwrap();
+
+        // Get RMQ and adjust the index back up, so it is relative to the start of the block.
+        let rmq_idx = Some(tbl.rmq(i - block_begin, j - block_begin)? + block_begin);
+        return Point::get(rmq_idx, self.x());
+    }
+}
+
+impl<'a> RMQ for Optimal<'a> {
+    fn rmq(&self, i: usize, j: usize) -> Option<usize> {
+        let BlockSize(bs) = self.block_size();
+        // The block indices are not the same for the small tables and the
+        // sparse table. For the sparse table we have to round up for i, but
+        // to get the block i is in, we need to round down.
+        let bi = BlockIdx(i / bs);
+        let bj = BlockIdx(j / bs);
+        let (sparse_bi, ii) = round_up(i, BlockSize(bs));
+        let (sparse_bj, jj) = round_down(j, BlockSize(bs));
+
+        if bi < bj {
+            let p1 = self.block_rmq(i, ii);
+            let p2 = Point::get(self.sparse_rmq(sparse_bi, sparse_bj), self.x());
+            let p3 = self.block_rmq(jj, j);
+            let min = super::lift_op(cmp::min);
+            Some(min(min(p1, p2), p3)?.0)
+        } else {
+            Some(self.block_rmq(i, j)?.0)
+        }
+    }
+}
+```
 
 
 [^1]: You can't always get constant time lookup with the sparse table trick, but then you can often get query times that are proportional to the size of the blocks, so that would be `O(log n)` here. This is not a bad query time; it only looks like it because we can do better her.
