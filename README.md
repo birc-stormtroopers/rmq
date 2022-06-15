@@ -688,6 +688,95 @@ In other words, by adding the total number of paths on the right, we reserve num
 
 I realise that there are a lot of ideas in play at this point--Cartesian trees that capture the structure of RMQ queries, stack machines that encode Cartesian trees, and now paths in Ballot number grids. It is a lot to wrap your head around. The good news is that, overwhelming as it seems, it is not terribly more complicated to implement this than the structures we have already seen implementations of.
 
+Building the block tables is rather simple. We can tabulate all the Ballot numbers we need in $O(b^2)$ which we have plenty of time for:
+
+```rust
+/// Build a table of Ballot numbers B_pq from p=q=0 to p=q=b.
+fn tabulate_ballot_numbers(b: usize) -> matrix::Matrix {
+    let mut ballot = matrix::Matrix::new(b + 1);
+    for q in 0..=b {
+        ballot[(0, q)] = 1
+    }
+    for q in 1..=b {
+        for p in 1..=q {
+            ballot[(p, q)] = ballot[(p - 1, q)] + ballot[(p, q - 1)]
+        }
+    }
+    ballot
+}
+```
+
+Then computing the block type number is just running the stack algorithm:
+
+```rust
+/// Compute the block type number of a block.
+/// The b argument is the true block size, but it can differ from block.len() for the last
+/// block. When we process the last block, we fake push the missing elements, putting them
+/// lower in the Cartesian tree than the real ones, so we still get the right RMQ.
+fn block_type(block: &[usize], b: usize, stack: &mut [i64], ballot: &matrix::Matrix) -> usize {
+    let mut num = 0;
+    let mut top = 0;
+    stack[top] = i64::MIN; // As close to -infinity as we get with this type...
+
+    for (i, &v) in block.iter().enumerate() {
+        let signed_v = v as i64;
+
+        // Invariant: When i runs from zero to b, b-i is p in B[p,q].
+        //            i-top is how the depth of the stack and b-(i-top)
+        //            is then the q in B[p,q].
+        let p = b - i;
+        while stack[top] > signed_v {
+            // Popping
+            let q = b - (i - top);
+            num += ballot[(p - 1, q)];
+            top -= 1;
+        }
+
+        // Push...
+        top += 1;
+        stack[top] = signed_v;
+    }
+
+    return num;
+}
+```
+
+To get all block types and tables, we run through the blocks and compute the number, if we hit a new number, i.e. if the table of tables doesn't already have a table for that number, we build the table the way we did with the simple $O(n^2)$ algorithm:
+
+```rust
+/// Compute the block types for all blocks in x and compute the tables for the
+/// blocks we observe.
+fn tabulate_blocks(x: &[usize], b: usize) -> (Vec<usize>, Vec<Option<tabulate::TabulatedQuery>>) {
+    // We need to round up to get the number of blocks here.
+    // The reduced array handles blocks 0, 1, ..., x.len()/b but we
+    // might also have a block after it.
+    let no_blocks = (x.len() + b - 1) / b;
+
+    let ballot = tabulate_ballot_numbers(b);
+    let mut stack: Vec<i64> = vec![i64::MIN; b + 1];
+
+    let mut block_types = vec![0; no_blocks];
+    let mut block_tables = vec![None; ballot[(b, b)]];
+    for i in 0..no_blocks {
+        let begin = i * b;
+        // The last block might be smaller than a full block, but if we just
+        // tabulate it anyway the missing values are virtually pushed and behave
+        // like they are larger than the existing ones, giving us the right RMQ
+        // results anyway (the true values are always smaller than the virtual ones).
+        let end = cmp::min(x.len(), begin + b);
+        let block = &x[begin..end];
+
+        let bt = block_type(block, b, &mut stack, &ballot);
+        block_types[i] = bt;
+        if let None = block_tables[bt] {
+            block_tables[bt] = Some(tabulate::TabulatedQuery::new(block));
+        }
+    }
+    return (block_types, block_tables);
+}
+```
+
+
 
 **FIXME: continue here**
 

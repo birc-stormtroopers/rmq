@@ -6,7 +6,7 @@ pub mod matrix {
     }
 
     /// Table for looking up any (i,j), 0 <= i, j < n
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub struct Matrix {
         n: usize,
         table: Vec<usize>
@@ -69,6 +69,7 @@ pub mod triag {
     }
     
     /// Table for looking up at [i,j) (j > i) intervals.
+    #[derive(Debug,Clone)]
     pub struct UTTable {
         n: usize,
         table: Vec<usize>,

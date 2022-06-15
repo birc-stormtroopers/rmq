@@ -4,6 +4,7 @@ use std::cmp;
 
 /// Fully tabulating the answer to all queries with
 /// <O(n²),O(1)> running times
+#[derive(Debug, Clone)]
 pub struct TabulatedQuery {
     tbl: triag::UTTable,
 }

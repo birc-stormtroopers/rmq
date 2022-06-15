@@ -88,6 +88,7 @@ mod tests {
     use super::tabulate::TabulatedQuery;
     use super::sparse::Sparse;
     use super::reduce::Reduced;
+    use super::optimal::Optimal;
 
     fn check_min_in_interval<'a, R: RMQ>(x: &'a [usize], rmq: &'a R, i: usize, j: usize) {
         let k = rmq.rmq(i, j).unwrap();
@@ -174,5 +175,21 @@ mod tests {
         // Power of two
         let x = vec![2, 1, 2, 5, 3, 6, 1, 3];
         check_min(&x, &Reduced::new(&x));
+    }
+
+    #[test]
+    fn test_optimal() {
+        // Not power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3, 7, 4];
+        check_min(&x, &Optimal::new(&x));
+        // Power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3, 7, 4, 2, 6, 3, 4, 7, 9];
+        check_min(&x, &Optimal::new(&x));
+        // Not power of two
+        let x = vec![2, 1, 2, 0, 2, 1, 3, 7, 4];
+        check_min(&x, &Optimal::new(&x));
+        // Power of two
+        let x = vec![2, 1, 2, 5, 3, 6, 1, 3];
+        check_min(&x, &Optimal::new(&x));
     }
 }
