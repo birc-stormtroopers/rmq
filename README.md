@@ -822,8 +822,8 @@ fn block_rmq(&self, i: usize, j: usize) -> Option<Point> {
         // table from the block type.
         let tbl = block_tables[block_types[block_index]].as_ref().unwrap();
         // Get RMQ and adjust the index back up, so it is relative to the start of the block.
-        let rmq_idx = Some(tbl.rmq(i - block_begin, j - block_begin)? + block_begin);
-        Point::get(rmq_idx, self.x())
+        let rmq_idx = tbl.rmq(i - block_begin, j - block_begin)? + block_begin;
+        Some(Point::new(rmq_idx, self.x()))
     } else {
         // j <= i so not a valid interval.
         None
@@ -856,6 +856,22 @@ impl<'a> RMQ for Optimal<'a> {
     }
 }
 ```
+
+## Parting thoughts
+
+Range minimum queries can be quite useful in many algorithms, but you rarely see them used as much as they deserve. There is a tendency to think of the $\langle O(n), O(1) \rangle$ construction as complicated, but I think that is mostly for historical reasons. The machinery we used to get to it is quite extensive, and it took a while to develop the theory. Along the way, the constructions were complicated. But over time, the ideas have been simplified, and as you saw, a complete implementation is not more complicated than building a suffix tree or a suffix array--quite the contrary. There is just a lot more theory needed to get to the solution.
+
+The solutions above are the basic theoretical ones, with matching implementations, but there are many aspects I haven't covered. Many that I am quite interested in, but haven't had the time to explore myself yet. Perhaps you would--it would be a great topic for a PiB or Master's thesis.
+
+What I am thinking of in particular are algorithmic engineering aspects. The asymptotic running times are not as interesting to us in practical applications as the actual wall time, and the theoretically optimal $\langle O(n), O(1) \rangle$ solution might not outperform the $\langle O(n), O(\log n)$ in practise, on the sizes of data we are usually interested in. If we are talking genomic data, then we can typically fit a whole genome length into 32 bits (which gives us 4 billion nucelotides), or if we can't then 64 bit words will certainly suffice for all our needs. With that in mind, $\log n$ is just 32, which isn't much for a linear scan. Linear scans are efficient, both in terms of cache performance and branch prediction.
+
+For the choice of block sizes, both for the $\langle O(n), O(\log n)\rangle$ and $\langle O(n), O(\log n)\rangle$ solutions, there are also plenty of interesting choices. A block size of $\log n$ is 32 while $1/2 \log n$ is 16 and $1/4 \log n$ is 8. Choices there, affecting where we use the reduced sparse table versus when we are looking at local blocks, will have different tradeoffs. How does changing the block size affect the running time?
+
+And speaking of block sizes. To map from indices to blocks, we divide by the block size, but this will always be more efficient if the block sizes are powers of two and we can replace multiplication, division and taking remembers with bit operations (`<<`, `>>` or masking). Is there something there, that could give us a performance boost?
+
+If you made it this far, those might be issues you would like to explore in more detail. If you do, and you want to do a project or a thesis on algorithms, come and see me. I am sure that we can work something out.
+
+
 
 
 [^1]: You can't always get constant time lookup with the sparse table trick, but then you can often get query times that are proportional to the size of the blocks, so that would be `O(log n)` here. This is not a bad query time; it only looks like it because we can do better her.

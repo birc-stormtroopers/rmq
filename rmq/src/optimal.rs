@@ -157,8 +157,8 @@ impl<'a> Optimal<'a> {
             let tbl = block_tables[block_types[block_index]].as_ref().unwrap();
 
             // Get RMQ and adjust the index back up, so it is relative to the start of the block.
-            let rmq_idx = Some(tbl.rmq(i - block_begin, j - block_begin)? + block_begin);
-            Point::get(rmq_idx, self.x())
+            let rmq_idx = tbl.rmq(i - block_begin, j - block_begin)? + block_begin;
+            Some(Point::new(rmq_idx, self.x()))
         } else {
             // j <= i so not a valid interval.
             None
