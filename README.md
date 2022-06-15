@@ -511,11 +511,11 @@ The logarithm, even squared, is dominated eventually by any polynomial with a po
 
 That then means that
 
-$$\log^2 n \in o(n^{1/k})$$
+$$\log^2 n \in o(n^a)$$
 
-and
+for any $a>0$ and thus that
 
-$$n^{1/k} \log^2 n \in o(n^{2/k}).$$
+$$n^{2/k} \log^2 n \in o(n^{2/k+a}).$$
 
 To get a linear time algorithm, we just need to pick a $k$ so $n^{2/k} \in O(n)$, so any $k>2$ will do.
 
