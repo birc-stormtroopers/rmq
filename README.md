@@ -643,7 +643,7 @@ Value 4 is greater than 1, so we don't move up the tree and just put a 4 leaf as
 
 ![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-5.png)
 
-With value 9, we do the same. Now the right edge of the tree is $-infty$, 1, 4, and 9 (while 8, 3, and 6 are sitting in the left tree of node 1).
+With value 9, we do the same. Now the right edge of the tree is $-\infty$, 1, 4, and 9 (while 8, 3, and 6 are sitting in the left tree of node 1).
 
 ![Building a Cartesian tree left-to-right](figs/rmq/cartesian-tree-left-right-6.png)
 
