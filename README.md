@@ -233,7 +233,13 @@ As we already discussed, there are $O(n \log n)$ table entires, we compute each 
 
 What about the queries? We don't have all intervals in our table, so $\mathrm{RMQ}(x,i,j)$ isn't a simple table lookup any longer.
 
-What we do is this: we find the largest power of two, $2^k$ such that $i+2^k < j$. If this is the largest such power, then the intervals $[i,i+2^k)$ and $[j-2^k,j)$ cover $[i,j)$, meaning that there isn't any indices in $[i,j)$ that aren't in at least one of the two--but there might be some overlap between the two intervals.
+What we do is this: we find the largest power of two, $2^k$
+such that $i+2^k < j.$
+If this is the largest such power, then the intervals $[i,i+2^k)$
+and $[j-2^k,j)$
+cover $[i,j),$
+meaning that there isn't any indices in $[i,j)$
+that aren't in at least one of the two--but there might be some overlap between the two intervals.
 
 Well, overlaps don't really bother us when we want a minimal value; the worst that can happen is that we get the right answer twice.
 
