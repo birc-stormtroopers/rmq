@@ -712,7 +712,10 @@ If we use a table of size $2^{2b}=2^{16}$ its size is 65,536.
 
 For the same $b$, 
 $2b \choose b$ is only 12,870 and the 8'th Catalan number is only
-$\frac{1}{8+1}{16 \choose 8} = 12,870 / 9 = 1,430$, or about two percent of the table actualy used.
+
+$$\frac{1}{8+1}{16 \choose 8} = 12,870 / 9 = 1,430$$
+
+or about two percent of the table actualy used.
 
 We do have linear preprocessing at this point, so all is good in that sense, but it is just wasting a lot of memory if we map blocks to $2b$-bit numbers and use an array to store tables. (A better representation of the table, such as a hash table, might alleviate this, but with some overhead). We can, however, improve on the idea and get a mapping from blocks to $\{0,1,\ldots,C_b-1\}$ thus wasting no memory if all blocks are present. It just requires a slight twist to the idea we already have. The twise requires some more math, but the implementation is as simple as if we had stopped here.
 
