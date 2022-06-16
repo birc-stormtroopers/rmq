@@ -272,7 +272,8 @@ pub fn power_index(i: usize, j: usize) -> ((usize,Pow), (usize,Pow)) {
 }
 ```
 
-This is two table lookups and some comparisons, all in $O(1)$, so this sparse idea gives us $\langle O(n \log n),O(1) \rangle$.
+This is two table lookups and some comparisons, all in $O(1)$,
+so this sparse idea gives us $\langle O(n \log n),O(1) \rangle$.
 
 ## Reduce + sparse
 
