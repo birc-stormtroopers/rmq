@@ -118,19 +118,8 @@ There are only $\log n$ such powers of two, so the table only has have $O(n \log
 
 The trick for that is once again dynamic programming.
 
-Construct the table from shorter to longer intervals. The length-one intervals are trivial, as before. Then, when you want to know 
-
-$$\mathrm{RMQ}(i,i+2^k)$$
-
-you will already have computed
-
-$$\mathrm{RMQ}(i,i+2^{k-1})$$
-
-and
-
-$$\mathrm{RMQ}(i+2^{k-1},i+2^k),$$
-
-so you just have to get the values there and pick the best.
+Construct the table from shorter to longer intervals. The length-one intervals are trivial, as before. Then, when you want to know $\mathrm{RMQ}(i,i+2^k)$ you will already have computed $\mathrm{RMQ}(i,i+2^{k-1})$ and
+$\mathrm{RMQ}(i+2^{k-1},i+2^k)$, so you just have to get the values there and pick the best.
 
 Before I show you the code, though, I need to show you a few additional tricks. Some of Rust specific--but you can achieve similar things in other languages--and others are just general ways of moving complexity from one place to another and making your code simpler in the process.
 
