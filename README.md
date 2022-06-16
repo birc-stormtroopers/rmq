@@ -612,7 +612,8 @@ The Cartesian tree relates to RMQ in a quite simple way. Whenever you want $\mat
 
 We are not going to *use* Cartesian trees for RMQ. We would have to search down to find the right range of values and such if we did (and of course you can if you want to), but this relationship between RMQ and Cartesian trees is interesting for us. If the topology of a Cartesian tree determines the result of all RMQ on the array--and it does if we always just pick the highest node--then the number of essentially different blocks is bounded by the number of Cartesian tree topologies. There may be an infinite number of possible blocks--it is arrays of integers, and there are certainly an infinite number of those--but there are not an infinite number of Cartesian tree topologies for arrays of a fixed size $b$.
 
-To see that the number of topologies is bounded by $O(2^{2b})$, and to get an algorithm for mapping a block to a number in the range $[0,2^{2b})$ that we can use for indexing into a table, we will look at a linear time algorithm for building Cartesian trees.[^5]
+To see that the number of topologies is bounded by $O(2^{2b})$,
+and to get an algorithm for mapping a block to a number in the range $[0,2^{2b})$ that we can use for indexing into a table, we will look at a linear time algorithm for building Cartesian trees.[^5]
 
 The algorithm resembles the algorithm for building a suffix tree from a suffix array that we see in GSA. We scan along an array and build the tree left-to-right by searching up along the right-most edge of the current tree to find where we should insert the next node. It is just a little simpler than that algorithm.
 
