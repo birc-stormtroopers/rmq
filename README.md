@@ -157,7 +157,9 @@ pub fn log_table_size(n: usize) -> Pow {
 
 Wrapping base types with different roles is very useful if you use a language that is statically typed and where this doesn't incur a runtime penalty, so I generally do it. If you do it in Python you will pay a runtime cost, so you might not want to there.
 
-Then the other idea, and it might be a stretch to call it an idea at this point, but it becomes helful later. When we have to determine which of $(i,i+2^{k-1})$ and $(i+2^{k-1},i+2^k)$ has the smaller value, we can use `RMQ` to get the index, then we need to pick the values in `x` at those index, find the minimal of those, and then pick the index corresponding to those values...oh my.
+Then the other idea, and it might be a stretch to call it an idea at this point, but it becomes helful later. When we have to determine which of $(i,i+2^{k-1})$
+and $(i+2^{k-1},i+2^k)$
+has the smaller value, we can use `RMQ` to get the index, then we need to pick the values in `x` at those index, find the minimal of those, and then pick the index corresponding to those values...oh my.
 
 I decided it would be easier to have a type that holds an index together with value, `(i,x[i])`, and define `min` on those.
 
