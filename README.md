@@ -712,7 +712,7 @@ If we use a table of size $2^{2b}=2^{16}$ its size is 65,536.
 
 For the same $b$, 
 
-$$2b \choose b = 12,870$$
+$${2b \choose b} = 12,870$$
 
 and the 8'th Catalan number is only
 
