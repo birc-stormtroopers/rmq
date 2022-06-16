@@ -739,7 +739,12 @@ If you don't want to compute the value of $B_{pq}$ recursively, a result from co
 
 There are two properties that make these new numbers interesting to us when we want to map Cartesian trees to numbers. The first is how they relate to the Catalan numbers, and thus to how many different topologies we can have for a tree with $b$ nodes. If you take the analytical formula for $B_{pq}$ and set $p=q=b$ you get $B_{bb} = \frac{b-b+1}{b+1}{b+b \choose b} = \frac{1}{b+1}{2b \choose b} = C_b$. Thus, when $p=q$, we have a Catalan number. The second property is that $B_{pq}$ is the number of paths you have from $B_{pq}$ to $B_{00}$ in the grid we just drew. To see this, consider that you have to go through $B_{(p-1)q}$ or $B_{p(q-1)}$ when you are leaving $B_{pq}$, and the number of paths you from there are the values of those two numbers.
 
-If we look at the grid that goes from $B_{bb}$ to $B_{00}$ to $B_{bb}$, the total number of paths from $B_{bb}$ to $B_{00}$ is thus exactly the number of binary trees we can have with $b$ leaves. If we can match each tree topology to a path in this grid, and each path in the grid to a number in $\{0,\ldots,C_b-1\}$, then we have the mapping we so much desire.
+If we look at the grid that goes from $B_{bb}$
+to $B_{00}$,
+the total number of paths from $B_{bb}$
+to $B_{00}$
+is thus exactly the number of binary trees we can have with $b$ leaves.
+If we can match each tree topology to a path in this grid, and each path in the grid to a number in $\{0,\ldots,C_b-1\}$, then we have the mapping we so much desire.
 
 Mapping trees to paths is the easy part. We can basically reuse the idea we already have, with simulating constructing Cartesian trees with a stack. Instead of generating a binary number, however, we can consider the push and pop operations as directions to follow in the grid.
 
