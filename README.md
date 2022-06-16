@@ -956,6 +956,9 @@ is 16 and $1/4 \log n$ is 8. Choices there, affecting where we use the reduced s
 
 And speaking of block sizes. To map from indices to blocks, we divide by the block size, but this will always be more efficient if the block sizes are powers of two and we can replace multiplication, division and taking remembers with bit operations (`<<`, `>>` or masking). Is there something there, that could give us a performance boost?
 
+Another issue is the space usage. The choice of block size exponentially increases the number of small block tables we need to construct, $b\mapsto C_b = \frac{1}{b+1}{2b \choose b}$,
+while it linearly decreases the size of the sparse table, $b\mapsto n/b$, so here as well there is a tradeoff that might be worth exploring.
+
 If you made it this far, those might be issues you would like to explore in more detail. If you do, and you want to do a project or a thesis on algorithms, come and see me. I am sure that we can work something out.
 
 
