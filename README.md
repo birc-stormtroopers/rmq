@@ -141,7 +141,9 @@ impl Pow {
 
 There is more to them, but you can look at the source for that. They are just wrappers for powers of two that I can use in my table. I have also defined a new type for this kind of tables--it is not quite the same as the one we used before--and it is the `powers::Powers` type you will see below. You don't need to see the details of the implementation as it is hardly more than a wrapper.
 
-If I have an array of length $n$ I need a table that can handle $n$ indices and $\log_2(n)+1$ powers (where $\log_2(n)$ is rounded down). You might think it should be $\log_2(n)$ rounded up, but no, and it has to do with how the `powers::Powers` table works and that we actually index 1-based on the log-scale. You might use a different solution and then not have to deal with that, but it took me a few tries to get right so I thought I might mention it.
+If I have an array of length $n$
+I need a table that can handle $n$ indices and $\log_2(n)+1$
+powers (where $\log_2(n)$ is rounded down). You might think it should be $\log_2(n)$ rounded up, but no, and it has to do with how the `powers::Powers` table works and that we actually index 1-based on the log-scale. You might use a different solution and then not have to deal with that, but it took me a few tries to get right so I thought I might mention it.
 
 ```rust
 pub fn log_table_size(n: usize) -> Pow {
