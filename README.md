@@ -944,9 +944,15 @@ Range minimum queries can be quite useful in many algorithms, but you rarely see
 
 The solutions above are the basic theoretical ones, with matching implementations, but there are many aspects I haven't covered. Many that I am quite interested in, but haven't had the time to explore myself yet. Perhaps you would--it would be a great topic for a PiB or Master's thesis.
 
-What I am thinking of in particular are algorithmic engineering aspects. The asymptotic running times are not as interesting to us in practical applications as the actual wall time, and the theoretically optimal $\langle O(n), O(1) \rangle$ solution might not outperform the $\langle O(n), O(\log n)$ in practise, on the sizes of data we are usually interested in. If we are talking genomic data, then we can typically fit a whole genome length into 32 bits (which gives us 4 billion nucelotides), or if we can't then 64 bit words will certainly suffice for all our needs. With that in mind, $\log n$ is just 32, which isn't much for a linear scan. Linear scans are efficient, both in terms of cache performance and branch prediction.
+What I am thinking of in particular are algorithmic engineering aspects. The asymptotic running times are not as interesting to us in practical applications as the actual wall time, and the theoretically optimal $\langle O(n), O(1) \rangle$
+solution might not outperform the $\langle O(n), O(\log n)$
+in practise, on the sizes of data we are usually interested in. If we are talking genomic data, then we can typically fit a whole genome length into 32 bits (which gives us 4 billion nucelotides), or if we can't then 64 bit words will certainly suffice for all our needs. With that in mind, $\log n$ is just 32, which isn't much for a linear scan. Linear scans are efficient, both in terms of cache performance and branch prediction.
 
-For the choice of block sizes, both for the $\langle O(n), O(\log n)\rangle$ and $\langle O(n), O(\log n)\rangle$ solutions, there are also plenty of interesting choices. A block size of $\log n$ is 32 while $1/2 \log n$ is 16 and $1/4 \log n$ is 8. Choices there, affecting where we use the reduced sparse table versus when we are looking at local blocks, will have different tradeoffs. How does changing the block size affect the running time?
+For the choice of block sizes, both for the $\langle O(n), O(\log n)\rangle$
+and $\langle O(n), O(\log n)\rangle$ solutions, there are also plenty of interesting choices.
+A block size of $\log n$
+is 32 while $1/2 \log n$
+is 16 and $1/4 \log n$ is 8. Choices there, affecting where we use the reduced sparse table versus when we are looking at local blocks, will have different tradeoffs. How does changing the block size affect the running time?
 
 And speaking of block sizes. To map from indices to blocks, we divide by the block size, but this will always be more efficient if the block sizes are powers of two and we can replace multiplication, division and taking remembers with bit operations (`<<`, `>>` or masking). Is there something there, that could give us a performance boost?
 
