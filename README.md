@@ -580,7 +580,7 @@ $$4^b b^2 = 4^{\frac{1}{k}\log_4 n} (1/k^2)\log_4^2 n \in O(n^{1/k} \log^2_4 n)$
 
 and we could go with any $k>1$.
 
-The factor of two difference, of course, is the conversion factor between base-two and base-four logarithms. I went with the base-two because we usually work with base-two logarithms in computer science, and in particular when we think about numbers and bits and such. Whatever floats your boat, though, the difference when changing bases is just a constant, and for base-four to base-two it is $\log_4 x = \log_2 x / \log_2 4 = \frac{1}{2}\log_2 x$.
+The factor of two difference, of course, is the conversion factor between base-two and base-four logarithms. I went with the base-two because we usually work with base-two logarithms in computer science, and in particular when we think about numbers and bits and such. Whatever floats your boat, though, the difference when changing bases is just a constant, and for base-four to base-two it is $\log_2 x = \log_4 x / \log_4 2 = 2\log_2 x$.
 
 Anyway, from all this we can conclude that even with the simple explicit tabulation technique we can get $\langle O(n),O(1) \rangle$ if we can map blocks down to "block types" so the number of types are bounded by $2^{2b}$.
 
