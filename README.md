@@ -702,7 +702,7 @@ The bound $2^{2b}$ for the number of block types is a little pessimistic, of cou
 
 This is only good new for our running time. The first upper bound, $2^{2b}$, gave us a linear time preprocessing, so if we have to process substantially less than that many tables we have an even faster algorithm. It also means, however, that if we build a table of size $2^{2b}$ for our block tables we will be wasting memory on empty entries, and the fraction we actually use decreases rapidly as $b$ increases.
 
-![Fraction of $2^{2b}$ table actually used](figs/fraction-of-exponential-table-used.png)
+![Fraction of table actually used](figs/fraction-of-exponential-table-used.png)
 
 To put this into concrete numbers, let's assume that $n$ fits into a 32-bit number, and let's simplify
 that as $n=2^{32}$. That means 
